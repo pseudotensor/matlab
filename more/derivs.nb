@@ -1,0 +1,1034 @@
+(************** Content-type: application/mathematica **************
+                     CreatedBy='Mathematica 4.2'
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     33135,        852]*)
+(*NotebookOutlinePosition[     33804,        875]*)
+(*  CellTagsIndexPosition[     33760,        871]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+Cell[BoxData[
+    \( (*\ just\ change\ m4 = \(-m5\)*m2/m1\ for\ small\ theta\ change\ non - 
+          skew\ solution\ in\ the\ Xp\ equation\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(m = {m1, m2, m3, m4, m5, m6, m7, m8}\), "\[IndentingNewLine]", 
+    \(X = {x, y, t}\), "\[IndentingNewLine]", 
+    \(Xp = {m1*x + m2*y + m3, m4*x + m5*y + m6, 
+        m7*t + m8}\), "\[IndentingNewLine]", 
+    \( (*Xp = {m1*x + m2*y + m3, m4*x + m5*y + m6, 
+            m7*t + m8} //. {m4 \[Rule] \(-m5\)*m2/m1}*) \)}], "Input"],
+
+Cell[BoxData[
+    \({m1, m2, m3, m4, m5, m6, m7, m8}\)], "Output"],
+
+Cell[BoxData[
+    \({x, y, t}\)], "Output"],
+
+Cell[BoxData[
+    \({m3 + m1\ x + m2\ y, m6 + m4\ x + m5\ y, m8 + m7\ t}\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ first\ solve\ for\ x, y\ in\ terms\ of\ x', y'\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(sols = 
+      FullSimplify[
+        Solve[{xp \[Equal] Xp[\([1]\)], yp \[Equal] Xp[\([2]\)], 
+            tp \[Equal] Xp[\([3]\)]}, {x, y, t}]]\), "\[IndentingNewLine]", 
+    \(myt = \(\(sols[\([1]\)]\)[\([1]\)]\)[\([2]\)]\), "\[IndentingNewLine]", \
+
+    \(myx = \(\(sols[\([1]\)]\)[\([2]\)]\)[\([2]\)]\), "\[IndentingNewLine]", \
+
+    \(myy = \(\(sols[\([1]\)]\)[\([3]\)]\)[\([2]\)]\[IndentingNewLine] (*\ 
+      note\ order\ is\ 1, 2, 
+      3\ for\ middle\ number\ above\ because\ order\ from\ sols\ is\ t, x, 
+      y, \ change\ \(accordingly!\)\ *) \), "\[IndentingNewLine]", 
+    \( (*\ i . e . \ order\ depends\ on\ mathematica' 
+        s\ \(mood!\)\ *) \)}], "Input"],
+
+Cell[BoxData[
+    \({{t \[Rule] \(\(-m8\) + tp\)\/m7, 
+        x \[Rule] \(m3\ m5 - m2\ m6 - m5\ xp + m2\ yp\)\/\(m2\ m4 - m1\ m5\), 
+        y \[Rule] \(m3\ m4 - m1\ m6 - m4\ xp + m1\ yp\)\/\(\(-m2\)\ m4 + m1\ \
+m5\)}}\)], "Output"],
+
+Cell[BoxData[
+    \(\(\(-m8\) + tp\)\/m7\)], "Output"],
+
+Cell[BoxData[
+    \(\(m3\ m5 - m2\ m6 - m5\ xp + m2\ yp\)\/\(m2\ m4 - m1\ m5\)\)], "Output"],
+
+Cell[BoxData[
+    \(\(m3\ m4 - m1\ m6 - m4\ xp + m1\ yp\)\/\(\(-m2\)\ m4 + m1\ m5\)\)], \
+"Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \(\(\( (*\ 
+      Now\ write\ a\ vector\ of\ derivatives\ that\ \(means : \ 
+            dxdm \((i)\)\)\  = \ 
+        dx/dm \((i)\)\ *) \)\(\[IndentingNewLine]\)\( (*\ 
+      and\ write\ a\ vector\ of\ derivatives\ that\ \(means : \ 
+            dydm \((i)\)\)\  = \ 
+        dy/dm \((i)\)\ *) \)\(\[IndentingNewLine]\)\( (*\ 
+      and\ write\ a\ vector\ of\ derivatives\ that\ \(means : \ 
+            dtdm \((i)\)\)\  = \ 
+        dt/dm \((i)\)\ *) \)\(\[IndentingNewLine]\)\( (*\ This\ holds\ x', 
+      y'\ and\ all\ other\ m' s\ constant\ while\ taking\ the\ derivative, \ 
+      just\ want\ we\ want\ for\ our\ derivative\ *) \)\)\)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(dxdm = 
+      FullSimplify[
+        Table[D[myx, m[\([i]\)]], {i, 1, 8}]]\), "\[IndentingNewLine]", 
+    \(dydm = 
+      FullSimplify[
+        Table[D[myy, m[\([i]\)]], {i, 1, 8}]]\), "\[IndentingNewLine]", 
+    \(dtdm = FullSimplify[Table[D[myt, m[\([i]\)]], {i, 1, 8}]]\)}], "Input"],
+
+Cell[BoxData[
+    \({\(\((m1 - m2)\)\ \((m1 + m2)\)\ \((m3\ m5 - m5\ xp + m2\ \((\(-m6\) + \
+yp)\))\)\)\/\(\((m1\^2 + m2\^2)\)\^2\ m5\), \(m1\ \((2\ m2\ m5\ \((m3 - xp)\) \
++ m1\^2\ \((m6 - yp)\) + m2\^2\ \((\(-m6\) + yp)\))\)\)\/\(\((m1\^2 + \
+m2\^2)\)\^2\ m5\), \(-\(m1\/\(m1\^2 + m2\^2\)\)\), 
+      0, \(m1\ m2\ \((\(-m6\) + yp)\)\)\/\(\((m1\^2 + m2\^2)\)\ m5\^2\), \(m1\
+\ m2\)\/\(\((m1\^2 + m2\^2)\)\ m5\), 0, 0}\)], "Output"],
+
+Cell[BoxData[
+    \(General::"spell1" \(\(:\)\(\ \)\) 
+      "Possible spelling error: new symbol name \"\!\(dydm\)\" is similar to \
+existing symbol \"\!\(dxdm\)\"."\)], "Message"],
+
+Cell[BoxData[
+    \({\(2\ m1\ m2\ \((m3\ m5 - m5\ xp + m2\ \((\(-m6\) + yp)\))\)\)\/\(\((m1\
+\^2 + m2\^2)\)\^2\ m5\), \(m2\^2\ m5\ \((m3 - xp)\) + m1\^2\ \((\(-m3\)\ m5 + \
+2\ m2\ m6 + m5\ xp - 2\ m2\ yp)\)\)\/\(\((m1\^2 + m2\^2)\)\^2\ m5\), \
+\(-\(m2\/\(m1\^2 + m2\^2\)\)\), 
+      0, \(m1\^2\ \((m6 - yp)\)\)\/\(\((m1\^2 + m2\^2)\)\ m5\^2\), \(-\(m1\^2\
+\/\(\((m1\^2 + m2\^2)\)\ m5\)\)\), 0, 0}\)], "Output"],
+
+Cell[BoxData[
+    \(General::"spell" \(\(:\)\(\ \)\) 
+      "Possible spelling error: new symbol name \"\!\(dtdm\)\" is similar to \
+existing symbols \!\({dxdm, dydm}\)."\)], "Message"],
+
+Cell[BoxData[
+    \({0, 0, 0, 0, 0, 0, \(m8 - tp\)\/m7\^2, \(-\(1\/m7\)\)}\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ now\ find\ these\ derivaties\ in\ terms\ of\ x\ and\ y, \ 
+      not\ x'\ and\ y'\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(FullSimplify[
+      dxdm = dxdm //. {xp \[Rule] Xp[\([1]\)], yp \[Rule] Xp[\([2]\)], 
+            tp \[Rule] Xp[\([3]\)]}]\), "\[IndentingNewLine]", 
+    \(FullSimplify[
+      dydm = dydm //. {xp \[Rule] Xp[\([1]\)], yp \[Rule] Xp[\([2]\)], 
+            tp \[Rule] Xp[\([3]\)]}]\), "\[IndentingNewLine]", 
+    \(FullSimplify[
+      dtdm = dtdm //. {xp \[Rule] Xp[\([1]\)], yp \[Rule] Xp[\([2]\)], 
+            tp \[Rule] Xp[\([3]\)]}]\)}], "Input"],
+
+Cell[BoxData[
+    \({\(-\(\(\((m1 - m2)\)\ \((m1 + m2)\)\ x\)\/\(m1\ \((m1\^2 + 
+                  m2\^2)\)\)\)\), \(-\(\(m2\ x + m1\ y\)\/\(m1\^2 + 
+              m2\^2\)\)\), \(-\(m1\/\(m1\^2 + m2\^2\)\)\), 
+      0, \(m2\ \((\(-m2\)\ x + m1\ y)\)\)\/\(\((m1\^2 + m2\^2)\)\ m5\), \(m1\ \
+m2\)\/\(\((m1\^2 + m2\^2)\)\ m5\), 0, 0}\)], "Output"],
+
+Cell[BoxData[
+    \({\(-\(\(2\ m2\ x\)\/\(m1\^2 + 
+              m2\^2\)\)\), \(m1\ x - m2\ y\)\/\(m1\^2 + m2\^2\), \
+\(-\(m2\/\(m1\^2 + m2\^2\)\)\), 
+      0, \(m1\ \((m2\ x - m1\ y)\)\)\/\(\((m1\^2 + m2\^2)\)\ m5\), \(-\(m1\^2\
+\/\(\((m1\^2 + m2\^2)\)\ m5\)\)\), 0, 0}\)], "Output"],
+
+Cell[BoxData[
+    \({0, 0, 0, 0, 0, 0, \(-\(t\/m7\)\), \(-\(1\/m7\)\)}\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \( (*\ So\ these\ will\ be\ used\ in\ our\ new\ gradient\ term\ \(dIp/
+            dX\  . \ dX\)/dm\ , \ where\ X = {x, y, t}, \ 
+      and\ so\ for\ each\ m\ there\ is\ up\ to\ 3\ \(terms!\)\ \((i . e . \ 
+              each\ b\ in\ your\ code\ could\ have\ 3\ terms\ with\ each\ \
+gradient)\)\ *) \)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(N1 = 29\), "\[IndentingNewLine]", 
+    \(N2 = 19\), "\[IndentingNewLine]", 
+    \(N3 = 51\), "\[IndentingNewLine]", 
+    \(E1 = N2/2 - 1\), "\[IndentingNewLine]", 
+    \(F = N1/2 - 1\), "\[IndentingNewLine]", 
+    \(F2 = N1/2 - 2\), "\[IndentingNewLine]", 
+    \(radsol = \(\(\(NSolve[
+              1^2 \[Equal] 
+                E1^2 + F^2 + F2^2 + E1^2 - 
+                  2*Sqrt[E1^2 + F^2]*Sqrt[E1^2 + F2^2]*Cos[A], 
+              A]\)[\([1]\)]\)[\([1]\)]\)[\([2]\)]\), "\[IndentingNewLine]", 
+    \(N[radsol*180/Pi]\), "\[IndentingNewLine]", 
+    \(\)}], "Input"],
+
+Cell[BoxData[
+    \(29\)], "Output"],
+
+Cell[BoxData[
+    \(19\)], "Output"],
+
+Cell[BoxData[
+    \(51\)], "Output"],
+
+Cell[BoxData[
+    \(17\/2\)], "Output"],
+
+Cell[BoxData[
+    \(27\/2\)], "Output"],
+
+Cell[BoxData[
+    \(25\/2\)], "Output"],
+
+Cell[BoxData[
+    \(Solve::"ifun" \(\(:\)\(\ \)\) 
+      "Inverse functions are being used by \!\(Solve\), so some solutions may \
+not be found."\)], "Message"],
+
+Cell[BoxData[
+    \(\(-0.03525509583586226`\)\)], "Output"],
+
+Cell[BoxData[
+    \(\(-2.019968197724151`\)\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(\(m1 = Cos[theta*Pi/180]*Sx;\)\), "\n", 
+    \(\(m2 = \(-Sin[theta*Pi/180]\)*Sx;\)\), "\n", 
+    \(\(m3 = 
+        1/2*Sx*\((xsize - \((xsize - 2*x0)\)*
+                Cos[theta*Pi/180] + \((ysize - 2*y0)\)*
+                Sin[theta*Pi/180])\);\)\), "\n", 
+    \(\(m4 = Sin[theta*Pi/180]*Sy;\)\), "\n", 
+    \(\(m5 = Cos[theta*Pi/180]*Sy;\)\), "\n", 
+    \(\(m6 = \(-1\)/2*
+          Sy*\((\(-ysize\) + \((ysize - 2*y0)\)*
+                Cos[theta*Pi/180] + \((xsize - 2*x0)\)*
+                Sin[theta*Pi/180])\);\)\), "\n", 
+    \(\(m7 = Sz;\)\), "\n", 
+    \(\(m8 = Sz*z0;\)\)}], "Input"],
+
+Cell[BoxData[
+    \(General::"spell1" \(\(:\)\(\ \)\) 
+      "Possible spelling error: new symbol name \"\!\(ysize\)\" is similar to \
+existing symbol \"\!\(xsize\)\"."\)], "Message"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(N1 = 29\), "\[IndentingNewLine]", 
+    \(N2 = 19\), "\[IndentingNewLine]", 
+    \(N3 = 51\), "\[IndentingNewLine]", 
+    \(xsize = N1\), "\[IndentingNewLine]", 
+    \(ysize = N2\), "\[IndentingNewLine]", 
+    \(zsize = N3\), "\[IndentingNewLine]", 
+    \(\(theta = \(-18\) + 1*i;\)\[IndentingNewLine] (*\ 
+      i = 0.   .36\ *) \), "\[IndentingNewLine]", 
+    \(\(x0 = \(-N1\)/10 + j;\)\[IndentingNewLine] (*\ 
+      j = 0.  . N1/5\ *) \), "\[IndentingNewLine]", 
+    \(\(y0 = \(-N2\)/10 + k;\)\[IndentingNewLine] (*\ 
+      k = 0.  . N2/5\ *) \), "\[IndentingNewLine]", 
+    \(\(z0 = \(-N3\)/10 + l;\)\[IndentingNewLine] (*\ 
+      l = 0.  . N3/5\ *) \), "\[IndentingNewLine]", 
+    \(\(Sx =  .9 + m/N1;\)\[IndentingNewLine] (*\ 
+      m = 0.   .0  .2*N1\ *) \), "\[IndentingNewLine]", 
+    \(\(Sy =  .9 + n/N2;\)\[IndentingNewLine] (*\ 
+      n = 0.   .0  .2*N2\ *) \), "\[IndentingNewLine]", 
+    \(\(Sz = 0.85 + o/N3;\)\[IndentingNewLine] (*\ 
+      o = 0.   .0  .3*N3\ *) \), "\[IndentingNewLine]", 
+    \(midi = {18, N1/10, N2/10, N3/10,  .1*N1, 0.1*N2, 
+        0.15*N3}\), "\[IndentingNewLine]", 
+    \(\(myparlist = {theta, x0, y0, z0, Sx, Sy, Sz};\)\)}], "Input"],
+
+Cell[BoxData[
+    \(29\)], "Output"],
+
+Cell[BoxData[
+    \(19\)], "Output"],
+
+Cell[BoxData[
+    \(51\)], "Output"],
+
+Cell[BoxData[
+    \(29\)], "Output"],
+
+Cell[BoxData[
+    \(19\)], "Output"],
+
+Cell[BoxData[
+    \(51\)], "Output"],
+
+Cell[BoxData[
+    \({18, 29\/10, 19\/10, 51\/10, 2.9000000000000004`, 1.9000000000000001`, 
+      7.6499999999999995`}\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[{
+    \(\(mylist = {i, j, k, l, m, n, o};\)\), "\[IndentingNewLine]", 
+    \(dm1 = Sum[D[m1, mylist[\([ii]\)]], {ii, 1, 7}]\)}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(dm1 = 
+      Sum[D[m1, mylist[\([ii]\)]], {ii, 1, 7}]\), "\[IndentingNewLine]", 
+    \(Min[N[Table[{dm1}, {i, 0, 36}, {m, 0, 0.2*N1}]]]\)}], "Input"],
+
+Cell[BoxData[
+    \(1\/29\ Cos[1\/180\ \((\(-18\) + i)\)\ \[Pi]] - 
+      1\/180\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + m\/29)\)\ \[Pi]\ Sin[
+          1\/180\ \((\(-18\) + i)\)\ \[Pi]]\)], "Output"],
+
+Cell[BoxData[
+    \(0.02701113434500893`\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(36*N1/5*N2/5*N3/5*0.2*N1*0.2*N2*0.3*N3\)], "Input"],
+
+Cell[BoxData[
+    \(2.729086390656`*^6\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(\(dm1 = 
+        Abs[Sum[D[m1, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm2 = 
+        Abs[Sum[D[m2, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm3 = 
+        Abs[Sum[D[m3, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm4 = 
+        Abs[Sum[D[m4, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm5 = 
+        Abs[Sum[D[m5, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm6 = 
+        Abs[Sum[D[m6, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm7 = 
+        Abs[Sum[D[m7, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm8 = 
+        Abs[Sum[D[m8, mylist[\([ii]\)]], {ii, 1, 
+              7}]];\)\), "\[IndentingNewLine]", 
+    \(Min[
+      N[Table[{dm1}, {i, 0, 36}, {m, 0, 0.2*N1}]]]\), "\[IndentingNewLine]", 
+    \(Min[
+      N[Table[{dm2}, {i, 0, 36}, {m, 0, 0.2*N1}]]]\), "\[IndentingNewLine]", 
+    \(Min[
+      N[Table[{dm3}, {i, 0, 36}, {j, 0, N1/5}, {k, 0, N2/5}, {m, 0, 
+            0.2*N1}]]]\), "\[IndentingNewLine]", 
+    \(Min[
+      N[Table[{dm4}, {i, 0, 36}, {n, 0, 0.2*N2}]]]\), "\[IndentingNewLine]", 
+    \(Min[
+      N[Table[{dm5}, {i, 0, 36}, {n, 0, 0.2*N2}]]]\), "\[IndentingNewLine]", 
+    \(Min[
+      N[Table[{dm6}, {i, 0, 36}, {j, 0, N1/5}, {k, 0, N2/5}, {n, 0, 
+            0.2*N2}]]]\), "\[IndentingNewLine]", 
+    \(Min[N[Table[{dm7}, {o, 0, 0.3*N3}]]]\), "\[IndentingNewLine]", 
+    \(Min[N[Table[{dm8}, {l, 0, N3/5}, {o, 0, 0.3*N3}]]]\)}], "Input"],
+
+Cell[BoxData[
+    \(0.02701113434500893`\)], "Output"],
+
+Cell[BoxData[
+    \(0.004283402396985455`\)], "Output"],
+
+Cell[BoxData[
+    \(0.8066590618392641`\)], "Output"],
+
+Cell[BoxData[
+    \(0.0003663844794591434`\)], "Output"],
+
+Cell[BoxData[
+    \(0.044349994735069204`\)], "Output"],
+
+Cell[BoxData[
+    \(0.46829440009393297`\)], "Output"],
+
+Cell[BoxData[
+    \(0.0196078431372549`\)], "Output"],
+
+Cell[BoxData[
+    \(0.75`\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(N[Sin[18/180*Pi]]\), "\[IndentingNewLine]", 
+    \(N[18/180*Pi]\), "\[IndentingNewLine]", 
+    \(N[Cos[18/180*Pi]]\), "\[IndentingNewLine]", 
+    \(N[1]\)}], "Input"],
+
+Cell[BoxData[
+    \(0.30901699437494745`\)], "Output"],
+
+Cell[BoxData[
+    \(0.3141592653589793`\)], "Output"],
+
+Cell[BoxData[
+    \(0.9510565162951535`\)], "Output"],
+
+Cell[BoxData[
+    \(1.`\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(Evaluate[Sequence\  @@ \ forfindroot]\)], "Input"],
+
+Cell[BoxData[
+    \(Sequence[{i, 18}, {j, 29\/10}, {k, 19\/10}, {l, 51\/10}, {m, 
+        2.9000000000000004`}, {n, 1.9000000000000001`}, {o, 
+        7.6499999999999995`}]\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(mylist = {i, j, k, l, m, n, o}\), "\[IndentingNewLine]", 
+    \(mlist0 = {m10, m20, m30, m40, m50, m60, m70, 
+        m80}\), "\[IndentingNewLine]", 
+    \(mlist0 = {0.7629, \(-0.0586\), 2.7253, 0.0366, 0.4770, 5.6791, 
+        1.1088, \(-2.2247\)}\), "\[IndentingNewLine]", 
+    \(mlist0 = {0.7629, \(-0.0586\), 2.7253, 0.4770, 5.6791, 
+        1.1088, \(-2.2247\)}\), "\[IndentingNewLine]", 
+    \(mymlist = {m1, m2, m3, m5, m6, m7, m8}\), "\[IndentingNewLine]", 
+    \(forfindroot = 
+      Table[{mylist[\([ii]\)], midi[\([ii]\)]}, {ii, 1, 
+          7}]\), "\[IndentingNewLine]", 
+    \(mym = 
+      Table[FullSimplify[
+            Normal[Series[mymlist[\([jj]\)], {ii, 18, 2}]]] \[Equal] 
+          mlist0[\([jj]\)], {jj, 1, 7}]\), "\[IndentingNewLine]", 
+    \(msolve = 
+      FindRoot[mym, 
+        Evaluate[Sequence\  @@ \ forfindroot]]\), "\[IndentingNewLine]", 
+    \(Re[myparlist //. msolve]\)}], "Input"],
+
+Cell[BoxData[
+    \({i, j, k, l, m, n, o}\)], "Output"],
+
+Cell[BoxData[
+    \({m10, m20, m30, m40, m50, m60, m70, m80}\)], "Output"],
+
+Cell[BoxData[
+    \({0.7629`, \(-0.0586`\), 2.7253`, 0.0366`, 0.477`, 5.6791`, 
+      1.1088`, \(-2.2247`\)}\)], "Output"],
+
+Cell[BoxData[
+    \({0.7629`, \(-0.0586`\), 2.7253`, 0.477`, 5.6791`, 
+      1.1088`, \(-2.2247`\)}\)], "Output"],
+
+Cell[BoxData[
+    \({\((\(\(0.9`\)\(\[InvisibleSpace]\)\) + m\/29)\)\ Cos[
+          1\/180\ \((\(-18\) + 
+                i)\)\ \[Pi]], \(-\((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+              m\/29)\)\)\ Sin[1\/180\ \((\(-18\) + i)\)\ \[Pi]], 
+      1\/2\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+            m\/29)\)\ \((29 - \((29 - 2\ \((\(-\(29\/10\)\) + j)\))\)\ Cos[
+                1\/180\ \((\(-18\) + i)\)\ \[Pi]] + \((19 - 
+                  2\ \((\(-\(19\/10\)\) + k)\))\)\ Sin[
+                1\/180\ \((\(-18\) + 
+                      i)\)\ \[Pi]])\), \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+            n\/19)\)\ Cos[
+          1\/180\ \((\(-18\) + 
+                i)\)\ \[Pi]], \(-\(1\/2\)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\
+\)\) + n\/19)\)\ \((\(-19\) + \((19 - 2\ \((\(-\(19\/10\)\) + k)\))\)\ Cos[
+                1\/180\ \((\(-18\) + i)\)\ \[Pi]] + \((29 - 
+                  2\ \((\(-\(29\/10\)\) + j)\))\)\ Sin[
+                1\/180\ \((\(-18\) + 
+                      i)\)\ \[Pi]])\), \(\(0.85`\)\(\[InvisibleSpace]\)\) + 
+        o\/51, \((\(-\(51\/10\)\) + 
+            l)\)\ \((\(\(0.85`\)\(\[InvisibleSpace]\)\) + 
+            o\/51)\)}\)], "Output"],
+
+Cell[BoxData[
+    \({{i, 18}, {j, 29\/10}, {k, 19\/10}, {l, 51\/10}, {m, 
+        2.9000000000000004`}, {n, 1.9000000000000001`}, {o, 
+        7.6499999999999995`}}\)], "Output"],
+
+Cell[BoxData[
+    \({1\/29\ \((\(\(26.1`\)\(\[InvisibleSpace]\)\) + m)\)\ Cos[
+            1\/180\ \((\(-18\) + i)\)\ \[Pi]] == 
+        0.7629`, \(-0.034482758620689655`\)\ \
+\((\(\(26.1`\)\(\[InvisibleSpace]\)\) + 1.`\ m)\)\ Sin[
+            1\/180\ \((\(-18\) + 
+                  i)\)\ \[Pi]] == \(-0.0586`\), \(-0.034482758620689655`\)\ \
+\((\(\(26.1`\)\(\[InvisibleSpace]\)\) + 
+              1.`\ m)\)\ \((\(-14.5`\) + \((\((\(\(17.400000000000002`\)\(\
+\[InvisibleSpace]\)\) + 0.`\ \[ImaginaryI])\) - 1.`\ j)\)\ Cos[
+                  1\/180\ \((\(-18\) + i)\)\ \[Pi]] + \((\((\(-11.4`\) + 
+                        0.`\ \[ImaginaryI])\) + 1.`\ k)\)\ Sin[
+                  1\/180\ \((\(-18\) + i)\)\ \[Pi]])\) == 2.7253`, 
+      1\/19\ \((\(\(17.1`\)\(\[InvisibleSpace]\)\) + n)\)\ Cos[
+            1\/180\ \((\(-18\) + i)\)\ \[Pi]] == 0.477`, 
+      1\/10\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + n\/19)\)\ \((95 + 
+              2\ \((\(-57\) + 5\ k)\)\ Cos[
+                  1\/180\ \((\(-18\) + i)\)\ \[Pi]] + 
+              2\ \((\(-87\) + 5\ j)\)\ Sin[
+                  1\/180\ \((\(-18\) + i)\)\ \[Pi]])\) == 
+        5.6791`, \(\(0.85`\)\(\[InvisibleSpace]\)\) + o\/51 == 
+        1.1088`, \((\(-\(51\/10\)\) + 
+              l)\)\ \((\(\(0.85`\)\(\[InvisibleSpace]\)\) + 
+              o\/51)\) == \(-2.2247`\)}\)], "Output"],
+
+Cell[BoxData[
+    \({i \[Rule] \(\(22.392387846780164`\)\(\[InvisibleSpace]\)\) + 
+          0.`\ \[ImaginaryI], 
+      j \[Rule] \(\(6.67550331221752`\)\(\[InvisibleSpace]\)\) + 
+          0.`\ \[ImaginaryI], 
+      k \[Rule] \(\(14.60165752180564`\)\(\[InvisibleSpace]\)\) + 
+          0.`\ \[ImaginaryI], 
+      l \[Rule] \(\(3.0935966810966806`\)\(\[InvisibleSpace]\)\) + 
+          0.`\ \[ImaginaryI], 
+      m \[Rule] \(-3.9107286922260585`\) + 0.`\ \[ImaginaryI], 
+      n \[Rule] \(-8.01030297899778`\) + 0.`\ \[ImaginaryI], 
+      o \[Rule] \(\(13.198799999999999`\)\(\[InvisibleSpace]\)\) + 
+          0.`\ \[ImaginaryI]}\)], "Output"],
+
+Cell[BoxData[
+    \({4.392387846780164`, 3.7755033122175203`, 
+      12.70165752180564`, \(-2.006403318903319`\), 0.7651472864749636`, 
+      0.4784051063685379`, 1.1088`}\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[{
+    \(\(mylist = {i, j, k, l, m, n, o};\)\), "\[IndentingNewLine]", 
+    \(\(dmylist = {di, dj, dk, dl, dm, dn, do};\)\), "\[IndentingNewLine]", 
+    \(\(dm1 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m1, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm2 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m2, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm3 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m3, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm4 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m4, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm5 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m5, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm6 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m6, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm7 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m7, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\), "\[IndentingNewLine]", 
+    \(\(dm8 = 
+        Normal[Series[
+            Sum[dmylist[\([ii]\)]*D[m8, mylist[\([ii]\)]], {ii, 1, 7}], {i, 
+              18, 2}]];\)\[IndentingNewLine]\[IndentingNewLine]\), "\
+\[IndentingNewLine]", 
+    \(\)}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(dmlist = 
+      FullSimplify[
+        N[{dm1 \[Equal] dm10, dm2 \[Equal] dm20, dm3 \[Equal] dm30, 
+            dm4 \[Equal] dm40, dm5 \[Equal] dm50, dm6 \[Equal] dm60, 
+            dm7 \[Equal] dm70, dm8 \[Equal] dm80}]]\)], "Input"],
+
+Cell[BoxData[
+    \({0.034482758620689655`\ dm - 
+          5.2520244790811824`*^-6\ dm\ \((\(-18.`\) + i)\)\^2 - 
+          0.00030461741978670857`\ di\ \((\(-18.`\) + 
+                i)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.034482758620689655`\ m)\) == dm10, 
+      dm\ \((\(\(0.010833078115826874`\)\(\[InvisibleSpace]\)\) - 
+                0.000601837673101493`\ i)\) + 
+          di\ \((\(-99.02846845413956`\) + 
+                i)\)\ \((\(\(63.028468454139556`\)\(\[InvisibleSpace]\)\) + 
+                i)\)\ \((2.3924596203935044`*^-6 + 
+                9.166511955530669`*^-8\ m)\) == dm20, 
+      0.034482758620689655`\ dm\ \((\(-2.9`\) + 
+                j)\) + \((\(-18.`\) + i)\)\^2\ \((dm\ \
+\((\(\(0.00009138522593601257`\)\(\[InvisibleSpace]\)\) - 
+                      5.2520244790811824`*^-6\ j)\) + 
+                dj\ \((\(-0.00013707783890401886`\) - 
+                      5.2520244790811824`*^-6\ m)\) + 
+                di\ \((\(-0.000027274039672485952`\) + 
+                      k\ \((2.3924596203935044`*^-6 + 
+                            9.166511955530669`*^-8\ m)\) - 
+                      1.0449823629304963`*^-6\ m)\))\) + \((\(-18.`\) + 
+                i)\)\ \((dm\ \((\(\(0.00686094947335702`\)\(\[InvisibleSpace]\
+\)\) - 0.000601837673101493`\ k)\) + 
+                dk\ \((\(-0.015707963267948967`\) - 
+                      0.000601837673101493`\ m)\) + 
+                di\ \((\(\(0.0047703087938598555`\)\(\[InvisibleSpace]\)\) + 
+                      j\ \((\(-0.0002741556778080377`\) - 
+                            0.000010504048958162365`\ m)\) + 
+                      0.0001827704518720251`\ m)\))\) + 
+          dj\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.034482758620689655`\ m)\) + 
+          0.008726646259971648`\ di\ \((\(\(22.8`\)\(\[InvisibleSpace]\)\) - 
+                2.`\ k)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.034482758620689655`\ m)\) == dm30, 
+      dn\ \((\(-0.016534698176788386`\) + 0.0009185943431549103`\ i)\) + 
+          di\ \((\(-99.02846845413956`\) + 
+                i)\)\ \((\(\(63.028468454139556`\)\(\[InvisibleSpace]\)\) + 
+                i)\)\ \((\(-2.3924596203935044`*^-6\) - 
+                1.3990991932125756`*^-7\ n)\) == dm40, 
+      0.05263157894736842`\ dn - 
+          8.01624788912391`*^-6\ dn\ \((\(-18.`\) + i)\)\^2 - 
+          0.00030461741978670857`\ di\ \((\(-18.`\) + 
+                i)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.05263157894736842`\ n)\) == dm50, 
+      0.05263157894736842`\ dn\ \((\(-1.9`\) + 
+                k)\) + \((\(-18.`\) + i)\)\^2\ \((dn\ \
+\((\(\(0.00009138522593601258`\)\(\[InvisibleSpace]\)\) - 
+                      8.01624788912391`*^-6\ k)\) + 
+                dk\ \((\(-0.00013707783890401886`\) - 
+                      8.01624788912391`*^-6\ n)\) + 
+                di\ \((\(\(0.00004162879739484698`\)\(\[InvisibleSpace]\)\) + 
+                      j\ \((\(-2.3924596203935044`*^-6\) - 
+                            1.3990991932125756`*^-7\ n)\) + 
+                      2.4344325961898815`*^-6\ n)\))\) + \((\(-18.`\) + 
+                i)\)\ \((dn\ \((\(-0.01598354157089544`\) + 
+                      0.0009185943431549103`\ j)\) + 
+                di\ \((\(\(0.0031253747270116304`\)\(\[InvisibleSpace]\)\) + 
+                      k\ \((\(-0.0002741556778080377`\) - 
+                            0.00001603249577824782`\ n)\) + 
+                      0.00018277045187202514`\ n)\) + 
+                dj\ \((\(\(0.015707963267948967`\)\(\[InvisibleSpace]\)\) + 
+                      0.0009185943431549102`\ n)\))\) + 
+          dk\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.05263157894736842`\ n)\) - 
+          0.008726646259971648`\ di\ \((\(\(34.8`\)\(\[InvisibleSpace]\)\) - 
+                2.`\ j)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.05263157894736842`\ n)\) == dm60, 
+      0.0196078431372549`\ do == dm70, 
+      0.0196078431372549`\ do\ \((\(-5.1`\) + l)\) + 
+          dl\ \((\(\(0.85`\)\(\[InvisibleSpace]\)\) + 
+                0.0196078431372549`\ o)\) == dm80}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(allequations = Join[mlist, dmlist]\), "\[IndentingNewLine]", 
+    \(allvariables = Join[mylist, dmylist]\)}], "Input"],
+
+Cell[BoxData[
+    \({\(\(0.9`\)\(\[InvisibleSpace]\)\) - 
+          0.00015230870989335428`\ \((\(-18.`\) + i)\)\^2\ \((\(\(0.9`\)\(\
+\[InvisibleSpace]\)\) + 0.034482758620689655`\ m)\) + 
+          0.034482758620689655`\ m == 
+        m10, \(-0.017453292519943295`\)\ \((\(-18.`\) + 
+              i)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+              0.034482758620689655`\ m)\) == 
+        m20, \((\(-5.62276004219759`\) + 0.9506519779945533`\ j + 
+              i\ \((\(\(0.10356135885015645`\)\(\[InvisibleSpace]\)\) + 
+                    i\ \((\(\(0.0026501715521443643`\)\(\[InvisibleSpace]\)\) \
+- 0.00015230870989335428`\ j)\) + 0.005483113556160754`\ j - 
+                    0.017453292519943295`\ k)\) + 
+              0.3141592653589793`\ k)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) \
++ 0.034482758620689655`\ m)\) == m30, 
+      0.017453292519943295`\ \((\(-18.`\) + 
+              i)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+              0.05263157894736842`\ n)\) == 
+        m40, \(\(0.9`\)\(\[InvisibleSpace]\)\) - 
+          0.00015230870989335428`\ \((\(-18.`\) + i)\)\^2\ \((\(\(0.9`\)\(\
+\[InvisibleSpace]\)\) + 0.05263157894736842`\ n)\) + 0.05263157894736842`\ n == 
+        m50, \((\(\(4.128938668108333`\)\(\[InvisibleSpace]\)\) - 
+              0.3141592653589793`\ j + 
+              i\ \((\(-0.36619478438724595`\) + 0.017453292519943295`\ j + 
+                    i\ \((\(\(0.001736319292784239`\)\(\[InvisibleSpace]\)\) \
+- 0.00015230870989335428`\ k)\) + 0.005483113556160754`\ k)\) + 
+              0.9506519779945533`\ k)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) \
++ 0.05263157894736842`\ n)\) == 
+        m60, \(\(0.85`\)\(\[InvisibleSpace]\)\) + 0.0196078431372549`\ o == 
+        m70, \((\(-5.1`\) + l)\)\ \((\(\(0.85`\)\(\[InvisibleSpace]\)\) + 
+              0.0196078431372549`\ o)\) == m80, 
+      0.034482758620689655`\ dm - 
+          5.2520244790811824`*^-6\ dm\ \((\(-18.`\) + i)\)\^2 - 
+          0.00030461741978670857`\ di\ \((\(-18.`\) + 
+                i)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.034482758620689655`\ m)\) == dm10, 
+      dm\ \((\(\(0.010833078115826874`\)\(\[InvisibleSpace]\)\) - 
+                0.000601837673101493`\ i)\) + 
+          di\ \((\(-99.02846845413956`\) + 
+                i)\)\ \((\(\(63.028468454139556`\)\(\[InvisibleSpace]\)\) + 
+                i)\)\ \((2.3924596203935044`*^-6 + 
+                9.166511955530669`*^-8\ m)\) == dm20, 
+      0.034482758620689655`\ dm\ \((\(-2.9`\) + 
+                j)\) + \((\(-18.`\) + i)\)\^2\ \((dm\ \
+\((\(\(0.00009138522593601257`\)\(\[InvisibleSpace]\)\) - 
+                      5.2520244790811824`*^-6\ j)\) + 
+                dj\ \((\(-0.00013707783890401886`\) - 
+                      5.2520244790811824`*^-6\ m)\) + 
+                di\ \((\(-0.000027274039672485952`\) + 
+                      k\ \((2.3924596203935044`*^-6 + 
+                            9.166511955530669`*^-8\ m)\) - 
+                      1.0449823629304963`*^-6\ m)\))\) + \((\(-18.`\) + 
+                i)\)\ \((dm\ \((\(\(0.00686094947335702`\)\(\[InvisibleSpace]\
+\)\) - 0.000601837673101493`\ k)\) + 
+                dk\ \((\(-0.015707963267948967`\) - 
+                      0.000601837673101493`\ m)\) + 
+                di\ \((\(\(0.0047703087938598555`\)\(\[InvisibleSpace]\)\) + 
+                      j\ \((\(-0.0002741556778080377`\) - 
+                            0.000010504048958162365`\ m)\) + 
+                      0.0001827704518720251`\ m)\))\) + 
+          dj\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.034482758620689655`\ m)\) + 
+          0.008726646259971648`\ di\ \((\(\(22.8`\)\(\[InvisibleSpace]\)\) - 
+                2.`\ k)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.034482758620689655`\ m)\) == dm30, 
+      dn\ \((\(-0.016534698176788386`\) + 0.0009185943431549103`\ i)\) + 
+          di\ \((\(-99.02846845413956`\) + 
+                i)\)\ \((\(\(63.028468454139556`\)\(\[InvisibleSpace]\)\) + 
+                i)\)\ \((\(-2.3924596203935044`*^-6\) - 
+                1.3990991932125756`*^-7\ n)\) == dm40, 
+      0.05263157894736842`\ dn - 
+          8.01624788912391`*^-6\ dn\ \((\(-18.`\) + i)\)\^2 - 
+          0.00030461741978670857`\ di\ \((\(-18.`\) + 
+                i)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.05263157894736842`\ n)\) == dm50, 
+      0.05263157894736842`\ dn\ \((\(-1.9`\) + 
+                k)\) + \((\(-18.`\) + i)\)\^2\ \((dn\ \
+\((\(\(0.00009138522593601258`\)\(\[InvisibleSpace]\)\) - 
+                      8.01624788912391`*^-6\ k)\) + 
+                dk\ \((\(-0.00013707783890401886`\) - 
+                      8.01624788912391`*^-6\ n)\) + 
+                di\ \((\(\(0.00004162879739484698`\)\(\[InvisibleSpace]\)\) + 
+                      j\ \((\(-2.3924596203935044`*^-6\) - 
+                            1.3990991932125756`*^-7\ n)\) + 
+                      2.4344325961898815`*^-6\ n)\))\) + \((\(-18.`\) + 
+                i)\)\ \((dn\ \((\(-0.01598354157089544`\) + 
+                      0.0009185943431549103`\ j)\) + 
+                di\ \((\(\(0.0031253747270116304`\)\(\[InvisibleSpace]\)\) + 
+                      k\ \((\(-0.0002741556778080377`\) - 
+                            0.00001603249577824782`\ n)\) + 
+                      0.00018277045187202514`\ n)\) + 
+                dj\ \((\(\(0.015707963267948967`\)\(\[InvisibleSpace]\)\) + 
+                      0.0009185943431549102`\ n)\))\) + 
+          dk\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.05263157894736842`\ n)\) - 
+          0.008726646259971648`\ di\ \((\(\(34.8`\)\(\[InvisibleSpace]\)\) - 
+                2.`\ j)\)\ \((\(\(0.9`\)\(\[InvisibleSpace]\)\) + 
+                0.05263157894736842`\ n)\) == dm60, 
+      0.0196078431372549`\ do == dm70, 
+      0.0196078431372549`\ do\ \((\(-5.1`\) + l)\) + 
+          dl\ \((\(\(0.85`\)\(\[InvisibleSpace]\)\) + 
+                0.0196078431372549`\ o)\) == dm80}\)], "Output"],
+
+Cell[BoxData[
+    \({i, j, k, l, m, n, o, di, dj, dk, dl, dm, dn, do}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(Solve[allequations, allvariables]\)], "Input"],
+
+Cell[BoxData[
+    \({}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(60/2.6\)], "Input"],
+
+Cell[BoxData[
+    \(23.076923076923073`\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(allequations[\([1]\)]\)], "Input"],
+
+Cell[BoxData[
+    \(\(\(0.9`\)\(\[InvisibleSpace]\)\) + 0.034482758620689655`\ m == 
+      m10\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(N[10^6/2^7]*\(0.5/60\)/60\)], "Input"],
+
+Cell[BoxData[
+    \(1.0850694444444444`\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[{
+    \(m = 0.7629\), "\n", 
+    \(\(-0.0586\)\), "\n", 
+    \(2.7253\), "\n", 
+    \(0.0366\), "\n", 
+    \(0.4770\), "\n", 
+    \(5.6791\), "\n", 
+    \(1.1088\), "\n", 
+    \(\(-2.2247\)\)}], "Input"]
+},
+FrontEndVersion->"4.2 for Microsoft Windows",
+ScreenRectangle->{{0, 1600}, {0, 1117}},
+WindowSize->{1258, 1083},
+WindowMargins->{{Automatic, 61}, {Automatic, 95}},
+Magnification->1.25
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+Cell[1754, 51, 158, 2, 35, "Input"],
+
+Cell[CellGroupData[{
+Cell[1937, 57, 349, 6, 98, "Input"],
+Cell[2289, 65, 66, 1, 35, "Output"],
+Cell[2358, 68, 43, 1, 35, "Output"],
+Cell[2404, 71, 86, 1, 35, "Output"]
+}, Open  ]],
+Cell[2505, 75, 89, 1, 35, "Input"],
+
+Cell[CellGroupData[{
+Cell[2619, 80, 698, 14, 140, "Input"],
+Cell[3320, 96, 233, 4, 50, "Output"],
+Cell[3556, 102, 54, 1, 49, "Output"],
+Cell[3613, 105, 92, 1, 50, "Output"],
+Cell[3708, 108, 99, 2, 50, "Output"]
+}, Open  ]],
+Cell[3822, 113, 669, 12, 98, "Input"],
+
+Cell[CellGroupData[{
+Cell[4516, 129, 306, 7, 77, "Input"],
+Cell[4825, 138, 432, 6, 99, "Output"],
+Cell[5260, 146, 181, 3, 30, "Message"],
+Cell[5444, 151, 410, 6, 99, "Output"],
+Cell[5857, 159, 185, 3, 30, "Message"],
+Cell[6045, 164, 88, 1, 49, "Output"]
+}, Open  ]],
+Cell[6148, 168, 124, 2, 35, "Input"],
+
+Cell[CellGroupData[{
+Cell[6297, 174, 469, 9, 77, "Input"],
+Cell[6769, 185, 344, 5, 52, "Output"],
+Cell[7116, 192, 284, 5, 55, "Output"],
+Cell[7403, 199, 84, 1, 49, "Output"]
+}, Open  ]],
+Cell[7502, 203, 330, 5, 56, "Input"],
+
+Cell[CellGroupData[{
+Cell[7857, 212, 590, 13, 203, "Input"],
+Cell[8450, 227, 36, 1, 35, "Output"],
+Cell[8489, 230, 36, 1, 35, "Output"],
+Cell[8528, 233, 36, 1, 35, "Output"],
+Cell[8567, 236, 39, 1, 49, "Output"],
+Cell[8609, 239, 39, 1, 49, "Output"],
+Cell[8651, 242, 39, 1, 49, "Output"],
+Cell[8693, 245, 160, 3, 30, "Message"],
+Cell[8856, 250, 59, 1, 35, "Output"],
+Cell[8918, 253, 57, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[9012, 259, 616, 14, 182, "Input"],
+Cell[9631, 275, 183, 3, 30, "Message"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[9851, 283, 1195, 23, 476, "Input"],
+Cell[11049, 308, 36, 1, 35, "Output"],
+Cell[11088, 311, 36, 1, 35, "Output"],
+Cell[11127, 314, 36, 1, 35, "Output"],
+Cell[11166, 317, 36, 1, 35, "Output"],
+Cell[11205, 320, 36, 1, 35, "Output"],
+Cell[11244, 323, 36, 1, 35, "Output"],
+Cell[11283, 326, 132, 2, 49, "Output"]
+}, Open  ]],
+Cell[11430, 331, 150, 2, 56, "Input"],
+
+Cell[CellGroupData[{
+Cell[11605, 337, 170, 3, 56, "Input"],
+Cell[11778, 342, 200, 3, 49, "Output"],
+Cell[11981, 347, 54, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[12072, 353, 71, 1, 35, "Input"],
+Cell[12146, 356, 52, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[12235, 362, 1683, 40, 350, "Input"],
+Cell[13921, 404, 54, 1, 35, "Output"],
+Cell[13978, 407, 55, 1, 35, "Output"],
+Cell[14036, 410, 53, 1, 35, "Output"],
+Cell[14092, 413, 56, 1, 35, "Output"],
+Cell[14151, 416, 55, 1, 35, "Output"],
+Cell[14209, 419, 54, 1, 35, "Output"],
+Cell[14266, 422, 53, 1, 35, "Output"],
+Cell[14322, 425, 39, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[14398, 431, 187, 4, 98, "Input"],
+Cell[14588, 437, 54, 1, 35, "Output"],
+Cell[14645, 440, 53, 1, 35, "Output"],
+Cell[14701, 443, 53, 1, 35, "Output"],
+Cell[14757, 446, 37, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[14831, 452, 70, 1, 35, "Input"],
+Cell[14904, 455, 186, 3, 49, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[15127, 463, 937, 19, 203, "Input"],
+Cell[16067, 484, 55, 1, 35, "Output"],
+Cell[16125, 487, 74, 1, 35, "Output"],
+Cell[16202, 490, 122, 2, 35, "Output"],
+Cell[16327, 494, 113, 2, 35, "Output"],
+Cell[16443, 498, 1185, 21, 125, "Output"],
+Cell[17631, 521, 178, 3, 49, "Output"],
+Cell[17812, 526, 1343, 23, 201, "Output"],
+Cell[19158, 551, 645, 12, 35, "Output"],
+Cell[19806, 565, 185, 3, 35, "Output"]
+}, Open  ]],
+Cell[20006, 571, 1565, 36, 287, "Input"],
+
+Cell[CellGroupData[{
+Cell[21596, 611, 253, 5, 35, "Input"],
+Cell[21852, 618, 4165, 71, 287, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[26054, 694, 139, 2, 56, "Input"],
+Cell[26196, 698, 5991, 101, 392, "Output"],
+Cell[32190, 801, 83, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[32310, 807, 66, 1, 35, "Input"],
+Cell[32379, 810, 36, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[32452, 816, 39, 1, 35, "Input"],
+Cell[32494, 819, 53, 1, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[32584, 825, 54, 1, 35, "Input"],
+Cell[32641, 828, 108, 2, 35, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[32786, 835, 58, 1, 35, "Input"],
+Cell[32847, 838, 53, 1, 35, "Output"]
+}, Open  ]],
+Cell[32915, 842, 216, 8, 182, "Input"]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+

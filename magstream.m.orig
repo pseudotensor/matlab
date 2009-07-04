@@ -1,0 +1,68 @@
+%%% Function to generate magnetic field lines from Jon's ZEUS code output
+function magstream(nlines,fname)
+
+%% (A) Clear current figure if need be
+clf;
+
+%% (B) Generate vector field
+[X,Y,Z,RHO,U,PHI,VX,VY,VZ,BX,BY,BZ] = read_dump(fname);
+
+%% (C)
+p = patch(isosurface(X,Y,Z,log10(RHO),-3));
+isonormals(X,Y,Z,log10(RHO),p);
+set(p,'FaceColor','green','EdgeColor','none','FaceAlpha',0.5);
+camlight;
+lighting gouraud;
+
+%% (D) Select starting positions for field lines
+%    Choose via Monte-Carlo to be proportional to |B|
+sx = zeros(1,nlines);
+sy = sx;
+sz = sx;
+xmax = max(max(max(X)));
+xmin = min(min(min(X)));
+ymax = max(max(max(Y)));
+ymin = min(min(min(Y)));
+zmax = max(max(max(Z)));
+zmin = min(min(min(Z)));
+Bnorm = sqrt(BX.^2+BY.^2+BZ.^2);
+Bnorm = Bnorm/max(max(max(Bnorm)));
+for i=1:nlines,
+    rmc = 1.0;
+    Bmc = 0.0;
+    while (rmc>Bmc)
+        sx(i) = xmin + (xmax-xmin)*rand(1);
+        sy(i) = ymin + (ymax-ymin)*rand(1);
+        sz(i) = zmin + (zmax-zmin)*rand(1);
+        Bmc = interp3(X,Y,Z,Bnorm,sx(i),sy(i),sz(i));
+        rmc = rand(1);
+    end;
+end;
+
+
+%%   Right now just sample evenly in middle of the plane
+[nx ny nz] = size(X);
+
+%star_frac = 0.5;
+%[sx sy sz] = meshgrid( 0.5*(1-star_frac)*nx+0.5:star_frac*nx/nlines:0.5*(1+star_frac)*nx+0.5, 0.5*(1-star_frac)*ny+0.5:star_frac*ny/nlines:0.5*(1+star_frac)*ny+0.5, nz/2+0.5);
+
+stp_size = 0.01;
+nstps = 1000;
+
+hlines = streamline(X,Y,Z,BX,BY,BZ,sx,sy,sz,[stp_size, nstps]);
+set(hlines,'LineWidth',1,'Color','red');
+hlines = streamline(X,Y,Z,-BX,-BY,-BZ,sx,sy,sz,[stp_size, nstps]);
+set(hlines,'LineWidth',1,'Color','red');
+
+axis([1 nx 1 ny 1 nz]);
+axis square;
+
+set(gcf,'color','black');
+set(gca,'color','black','xcolor','white','ycolor','white','zcolor','white');
+
+
+% TUBE TRIAL
+% htubes = streamtube(X,Y,Z,BX,BY,BZ,sx,sy,sz);
+% set(htubes,'facecolor','blue','edgecolor','none');
+% camlight;
+% lighting gouraud;

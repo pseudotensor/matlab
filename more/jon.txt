@@ -1,0 +1,1219 @@
+b(3) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 3));
+b(4) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 4));
+b(5) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 5));
+b(6) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 6));
+b(7) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 7));
+b(8) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 8));
+pem(any(isnan(pem)'),:) = []; %removes from PEM any rows that contain NaNs.
+A = (pem(:, :))'*pem(:, :);
+A
+dm=inv(A+landa*eye(8))*b
+m
+mtry=m+dm;
+i1vect(:, 1)=mtry(4)*i0vect(:, 2)+mtry(5)*i0vect(:, 1)+mtry(6); %yp
+i1vect(:, 2)=mtry(1)*i0vect(:, 2)+mtry(2)*i0vect(:, 1)+mtry(3);%xp
+i1vect(:, 3)=mtry(7)*i0vect(:, 3) + mtry(8); %zp
+%computes error between the original i0 image and i1-intensities at
+%corresponding points: x&xp, y&yp, z&zp. For newm = x+ = newly updated
+%pameter vector
+i1vect(:, 4)= interp3(i1, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+pnts=size(find(~isnan(i1vect(:, 4))), 1)
+% Summing Error
+err=sumskipnan((i1vect(:, 4)-i0vect(:, 4)).^2);
+errr = err/pnts
+if errr>errp
+[errr errp]
+landa=landa*10
+display('landa increased');
+dontcompute=1;
+else
+[errr errp]
+landa=landa*0.1
+display('landa decreased');
+m=mtry
+errp=errr;
+dontcompute=0;
+end
+iteration=iteration+1
+m = [1 0 0 0 1 0 1 0]'
+i0=image0
+i1=image1;
+iteration = 0;
+[r c s]=size(i0); %r=ny; c=nx; s=nz
+[rp cp sp]=size(i1);
+%%%! add check for the sizes to be equal
+%Calculate gradient
+%i1 = smooth3(i1, 'gaussian')
+%i0 = smooth3(i0, 'gaussian')
+%display('smoothened')
+[i1gx, i1gy,  i1gz]=gradient(i1);
+%[FX,FY] = gradient(F) . Fx = differences in column (from col to col) direction, fy - in row
+%direction
+display('gradient computed')
+i1vect=zeros(rp*cp*sp, 4);
+%vectorize i0
+i0vect=zeros(r*c*s, 4); % vectorized i0 has 4 columns - with y, x, z coordinates and intensity value in the fourth column)
+h=1:r*c*s;
+i0vect(:, 1)=(mod(h-1, r)+1)';%y
+i0vect(:, 2)=(floor(mod((h-1)/r, c))+1)'; %x
+i0vect(:, 3)=(floor((h-1)/(c*r))+1)'; %z
+i0vect(:, 4) = i0(:);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%what's below? revise?
+%initial Landa
+landa=0.0001;
+pnts=size(find(~isnan((i0(:)+i1(:)))), 1);
+errp=sumskipnan((i0(:)-i1(:)).^2)/pnts
+errr=0
+pnts=0
+dm = zeros(8,1);
+dontcompute=0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Levengerg Marquardt algorithm
+%begin 3 cycles
+m=m+dm;
+i1vect(:, 1)=m(4)*i0vect(:, 2)+m(5)*i0vect(:, 1)+m(6); %yp
+i1vect(:, 2)=m(1)*i0vect(:, 2)+m(2)*i0vect(:, 1)+m(3);%xp
+i1vect(:, 3)=m(7)*i0vect(:, 3) + m(8); %zp
+i1vect(:, 4)= interp3(i1, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+A=zeros(8,8);
+b=zeros(8,1);
+%creates vectorized i1-transformed: yp, xp, zp coordinates obtained from
+%xyz. The 4th column is intensity values from i1 (interpolated)
+% if(dontcompute==0)
+% Interpolate Gradient in Y direction
+ipgy=interp3(i1gy, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Interpolate Gradient in X direction
+%ipgx=interp3(i1gx, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+ipgx=interp3(i1gx, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Interpolate Gradient in Z direction
+%ipgz=interp3(i1gz, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+ipgz=interp3(i1gz, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Compute Partial Derivate of Error
+pem=zeros(r*c*s, 8);
+pem(:, 1)=i0vect(:, 2).*ipgx; %pem(1)=j*ipgx;
+pem(:, 2)=i0vect(:, 1).*ipgx; %pem(2)=i*ipgx;
+pem(:, 3)=1.*ipgx; %pem(3)=1*ipgx;
+pem(:, 4)=i0vect(:, 2).*ipgy; %pem(4)=j*ipgy;
+pem(:, 5)=i0vect(:, 1).*ipgy; %pem(5)=i*ipgy;
+pem(:, 6)=1.*ipgy; %pem(6)=1*ipgy;
+pem(:, 7)=i0vect(:, 3).*ipgz; %pem(7)=k*ipgz;
+pem(:, 8)=1.*ipgz; %pem(8)=1*ipgz;
+% Updateing A and b
+b(1) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 1));
+b(2) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 2));
+b(3) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 3));
+b(4) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 4));
+b(5) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 5));
+b(6) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 6));
+b(7) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 7));
+b(8) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 8));
+pem(any(isnan(pem)'),:) = []; %removes from PEM any rows that contain NaNs.
+A = (pem(:, :))'*pem(:, :);
+%end
+% A
+% b
+% Solve M's incerment
+dm=inv(A+landa*eye(8))*b
+mtry=m+dm;
+i1vect(:, 1)=mtry(4)*i0vect(:, 2)+mtry(5)*i0vect(:, 1)+mtry(6); %yp
+i1vect(:, 2)=mtry(1)*i0vect(:, 2)+mtry(2)*i0vect(:, 1)+mtry(3);%xp
+i1vect(:, 3)=mtry(7)*i0vect(:, 3) + mtry(8); %zp
+%computes error between the original i0 image and i1-intensities at
+%corresponding points: x&xp, y&yp, z&zp. For newm = x+ = newly updated
+%pameter vector
+i1vect(:, 4)= interp3(i1, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+%%%NOTE%VI = interp3(V,XI,YI,ZI) assumes X=1:N, Y=1:M, Z=1:P where [M,N,P]=size(V).
+pnts=size(find(~isnan(i1vect(:, 4))), 1)
+% Summing Error
+err=sumskipnan((i1vect(:, 4)-i0vect(:, 4)).^2);
+errr = err/pnts
+if errr>errp
+[errr errp]
+landa=landa*10
+display('landa increased');
+dontcompute=1;
+else
+[errr errp]
+landa=landa*0.1
+display('landa decreased');
+m=mtry
+errp=errr;
+dontcompute=0;
+end
+iteration=iteration+1
+%creates vectorized i1-transformed: yp, xp, zp coordinates obtained from
+%xyz. The 4th column is intensity values from i1 (interpolated)
+% if(dontcompute==0)
+% Interpolate Gradient in Y direction
+ipgy=interp3(i1gy, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Interpolate Gradient in X direction
+%ipgx=interp3(i1gx, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+ipgx=interp3(i1gx, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Interpolate Gradient in Z direction
+%ipgz=interp3(i1gz, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+ipgz=interp3(i1gz, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Compute Partial Derivate of Error
+pem=zeros(r*c*s, 8);
+pem(:, 1)=i0vect(:, 2).*ipgx; %pem(1)=j*ipgx;
+pem(:, 2)=i0vect(:, 1).*ipgx; %pem(2)=i*ipgx;
+pem(:, 3)=1.*ipgx; %pem(3)=1*ipgx;
+pem(:, 4)=i0vect(:, 2).*ipgy; %pem(4)=j*ipgy;
+pem(:, 5)=i0vect(:, 1).*ipgy; %pem(5)=i*ipgy;
+pem(:, 6)=1.*ipgy; %pem(6)=1*ipgy;
+pem(:, 7)=i0vect(:, 3).*ipgz; %pem(7)=k*ipgz;
+pem(:, 8)=1.*ipgz; %pem(8)=1*ipgz;
+% Updateing A and b
+b(1) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 1));
+b(2) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 2));
+b(3) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 3));
+b(4) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 4));
+b(5) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 5));
+b(6) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 6));
+b(7) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 7));
+b(8) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 8));
+pem(any(isnan(pem)'),:) = []; %removes from PEM any rows that contain NaNs.
+A = (pem(:, :))'*pem(:, :);
+%end
+% A
+% b
+% Solve M's incerment
+dm=inv(A+landa*eye(8))*b
+mtry=m+dm;
+i1vect(:, 1)=mtry(4)*i0vect(:, 2)+mtry(5)*i0vect(:, 1)+mtry(6); %yp
+i1vect(:, 2)=mtry(1)*i0vect(:, 2)+mtry(2)*i0vect(:, 1)+mtry(3);%xp
+i1vect(:, 3)=mtry(7)*i0vect(:, 3) + mtry(8); %zp
+%computes error between the original i0 image and i1-intensities at
+%corresponding points: x&xp, y&yp, z&zp. For newm = x+ = newly updated
+%pameter vector
+i1vect(:, 4)= interp3(i1, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+%%%NOTE%VI = interp3(V,XI,YI,ZI) assumes X=1:N, Y=1:M, Z=1:P where [M,N,P]=size(V).
+pnts=size(find(~isnan(i1vect(:, 4))), 1)
+% Summing Error
+err=sumskipnan((i1vect(:, 4)-i0vect(:, 4)).^2);
+errr = err/pnts
+if errr>errp
+[errr errp]
+landa=landa*10
+display('landa increased');
+dontcompute=1;
+else
+[errr errp]
+landa=landa*0.1
+display('landa decreased');
+m=mtry
+errp=errr;
+dontcompute=0;
+end
+iteration=iteration+1
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+m
+m(:,1)=1.0514;
+m(:,2)=   -0.3972;
+m(:,3)=    2.9922;
+m(:,4)=    0.2314;
+m(:,5)=    0.9561;
+m(:,6)=   -1.9540;
+m(:,7)=    1.0000;
+m(:,8)=         0;
+image1=myNewaffine(image0,m)
+it=.3972*.2314+1.0514*.9561
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)));
+end
+end
+size(image0)
+m(:,1)=1.0514;
+m(:,2)=   -0.3972;
+m(:,3)=    2.9922;
+m(:,4)=    0.2314;
+m(:,5)=    0.9561;
+m(:,6)=   -1.9540;
+m(:,7)=    1.0000;
+m(:,8)=         0;
+image1=myNewaffine(image0,m)
+m
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+m
+image1=myNewaffine(image0,m)
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+m(:,1)=1.0514;
+m(:,2)=   -0.3972;
+m(:,3)=    2.9922;
+m(:,4)=    0.2314;
+m(:,5)=    0.9561;
+m(:,6)=   -1.9540;
+m(:,7)=    1.0000;
+m(:,8)=         0;
+image1=myNewaffine(image0,m)
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)));
+end
+end
+size(image0)
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+dampnewtonAff(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+it=-.3972/1.0514
+set it2=-.2314/.9561
+set it2= -.2314/.9561
+\it2= -.2314/.9561
+it2= -.2314/.9561
+i0=image0;
+i1=image1;
+m = [1 0 0 0 1 0 1 0]'
+iteration = 0;
+[r c s]=size(i0); %r=ny; c=nx; s=nz
+[rp cp sp]=size(i1);
+%%%! add check for the sizes to be equal
+%Calculate gradient
+%i1 = smooth3(i1, 'gaussian')
+%i0 = smooth3(i0, 'gaussian')
+%display('smoothened')
+[i1gx, i1gy,  i1gz]=gradient(i1);
+%[FX,FY] = gradient(F) . Fx = differences in column (from col to col) direction, fy - in row
+%direction
+display('gradient computed')
+i1vect=zeros(rp*cp*sp, 4);
+%vectorize i0
+i0vect=zeros(r*c*s, 4); % vectorized i0 has 4 columns - with y, x, z coordinates and intensity value in the fourth column)
+h=1:r*c*s;
+i0vect(:, 1)=(mod(h-1, r)+1)';%y
+i0vect(:, 2)=(floor(mod((h-1)/r, c))+1)'; %x
+i0vect(:, 3)=(floor((h-1)/(c*r))+1)'; %z
+i0vect(:, 4) = i0(:);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%what's below? revise?
+%initial Landa
+n=0;
+pnts=size(find(~isnan((i0(:)+i1(:)))), 1);
+errp=sumskipnan((i0(:)-i1(:)).^2)/(r*c*s)
+errr=0
+pnts=0
+dm = zeros(8,1);
+dontcompute=0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Levengerg Marquardt algorithm
+%begin 3 cycles
+m=m+dm;
+i1vect(:, 1)=m(4)*i0vect(:, 2)+m(5)*i0vect(:, 1)+m(6); %yp
+i1vect(:, 2)=m(1)*i0vect(:, 2)+m(2)*i0vect(:, 1)+m(3);%xp
+i1vect(:, 3)=m(7)*i0vect(:, 3) + m(8); %zp
+A=zeros(8,8);
+b=zeros(8,1);
+iteration = 0;
+[r c s]=size(i0); %r=ny; c=nx; s=nz
+[rp cp sp]=size(i1);
+%%%! add check for the sizes to be equal
+%Calculate gradient
+%i1 = smooth3(i1, 'gaussian')
+%i0 = smooth3(i0, 'gaussian')
+%display('smoothened')
+[i1gx, i1gy,  i1gz]=gradient(i1);
+%[FX,FY] = gradient(F) . Fx = differences in column (from col to col) direction, fy - in row
+%direction
+display('gradient computed')
+i1vect=zeros(rp*cp*sp, 4);
+%vectorize i0
+i0vect=zeros(r*c*s, 4); % vectorized i0 has 4 columns - with y, x, z coordinates and intensity value in the fourth column)
+h=1:r*c*s;
+i0vect(:, 1)=(mod(h-1, r)+1)';%y
+i0vect(:, 2)=(floor(mod((h-1)/r, c))+1)'; %x
+i0vect(:, 3)=(floor((h-1)/(c*r))+1)'; %z
+i0vect(:, 4) = i0(:);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%what's below? revise?
+%initial Landa
+n=0;
+pnts=size(find(~isnan((i0(:)+i1(:)))), 1);
+errp=sumskipnan((i0(:)-i1(:)).^2)/pnts
+errr=0
+pnts=0
+dm = zeros(8,1);
+dontcompute=0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Levengerg Marquardt algorithm
+%begin 3 cycles
+m=m+dm;
+i1vect(:, 1)=m(4)*i0vect(:, 2)+m(5)*i0vect(:, 1)+m(6); %yp
+i1vect(:, 2)=m(1)*i0vect(:, 2)+m(2)*i0vect(:, 1)+m(3);%xp
+i1vect(:, 3)=m(7)*i0vect(:, 3) + m(8); %zp
+A=zeros(8,8);
+b=zeros(8,1);
+if(dontcompute==0)
+% Interpolate Gradient in Y direction
+ipgy=interp3(i1gy, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Interpolate Gradient in X direction
+%ipgx=interp3(i1gx, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+ipgx=interp3(i1gx, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Interpolate Gradient in Z direction
+%ipgz=interp3(i1gz, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+ipgz=interp3(i1gz, i1vect(:, 2), i1vect(:, 1), i1vect(:, 3), 'linear');
+% Compute Partial Derivate of Error
+pem=zeros(r*c*s, 8);
+pem(:, 1)=i0vect(:, 2).*ipgx; %pem(1)=j*ipgx;
+pem(:, 2)=i0vect(:, 1).*ipgx; %pem(2)=i*ipgx;
+pem(:, 3)=1.*ipgx; %pem(3)=1*ipgx;
+pem(:, 4)=i0vect(:, 2).*ipgy; %pem(4)=j*ipgy;
+pem(:, 5)=i0vect(:, 1).*ipgy; %pem(5)=i*ipgy;
+pem(:, 6)=1.*ipgy; %pem(6)=1*ipgy;
+pem(:, 7)=i0vect(:, 3).*ipgz; %pem(7)=k*ipgz;
+pem(:, 8)=1.*ipgz; %pem(8)=1*ipgz;
+% Updateing A and b
+b(1) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 1));
+b(2) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 2));
+b(3) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 3));
+b(4) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 4));
+b(5) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 5));
+b(6) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 6));
+b(7) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 7));
+b(8) = -sumskipnan((i1vect(:, 4)-i0vect(:, 4)).*pem(:, 8));
+b
+pem(any(isnan(pem)'),:) = []; %removes from PEM any rows that contain NaNs.
+A = (pem(:, :))'*pem(:, :)
+end
+dm=(1/2^n)*inv(A)*b
+dampnewtonAff(image0,image1,[1 0 0 0 1 0 1 0 ]')
+dampnewtonAff(image0,image1,[1 0 0 0 1 0 1 0 ]')
+dampnewtonAff(image0,image1,[1 0 0 0 1 0 1 0 ]')
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+m
+mtry =
+1.0000
+0.0000
+0.0004
+-0.0000
+0.9999
+-0.0001
+1.0000
+0
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+dampnewtonAff(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+errorfunction(image0,image1,m)
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+%x0 = xsize/10
+x0 = 0
+%y0 = -ysize/10
+y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = 1
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+m
+lmvectorisedjon(I0t,subj1mea,[0.9962 .0872 2.2272 -.0872 .9962 .2999 1 0]')
+lmvectorisedjon(I0t,subj1mea,[1 0 0 0 1 0 1 0]')
+lmvectorisedjon(I0t,subj1mea,[0.9962 .0872 2.2272 -.0872 .9962 .2999 1 0]')
+lmvectorisedjon(I0t,subj1mea,[1 0 5 0 1 0 1 0]')
+lmvectorisedjon(I0t,subj1mea,[1 0 5 0 1 0 1 0]')
+lmvectorisedjon(I0t,subj1mea,[1 0 5 0 1 0 1 0]')
+lmvectorisedjon(I0t,subj1mea,[1 0 0 0 1 0 1 0]')
+%--  9:43 PM 7/11/03 --%
+%--  3:19 PM 7/12/03 --%
+%--  3:23 PM 7/12/03 --%
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)));
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+a= [1 2 ; 3 4]
+interp2(1.5, 1.5, a)
+interp2(a, 1.5, 1.5)
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=7*x;
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+m(:,1)=2;
+m(:,2)=   0;
+m(:,3)=    0;
+m(:,4)=    0;
+m(:,5)=    0;
+m(:,6)=    0;
+m(:,7)=    0;
+m(:,8)=    0;
+%
+image1=myNewaffine(image0,m)
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+m
+m(:,1)=2;
+m(:,2)=   0;
+m(:,3)=    0;
+m(:,4)=    0;
+m(:,5)=    0;
+m(:,6)=    0;
+m(:,7)=    0;
+m(:,8)=    0;
+%
+m
+image1=myNewaffine(image0,m)
+m(:,1)=2;
+m(:,2)=   0;
+m(:,3)=    0;
+m(:,4)=    0;
+m(:,5)=    1;
+m(:,6)=    0;
+m(:,7)=    1;
+m(:,8)=    0;
+%
+image1=myNewaffine(image0,m)
+image1=myNewaffine(image0,m)
+image1=myNewaffine(image0,m)
+image1=myNewaffine(image0,m)
+image1=myNewaffine(image0,m)
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)));
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+m(:,1)=2;
+m(:,2)=   0;
+m(:,3)=    0;
+m(:,4)=    0;
+m(:,5)=    1;
+m(:,6)=    0;
+m(:,7)=    1;
+m(:,8)=    0;
+%
+image1=myNewaffine(image0,m)
+7*29
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=7*x;
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+m
+m(:,1)=2;
+m(:,2)=   0;
+m(:,3)=    0;
+m(:,4)=    0;
+m(:,5)=    1;
+m(:,6)=    0;
+m(:,7)=    1;
+m(:,8)=    0;
+%
+image1=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+image0
+[i1gx, i1gy,  i1gz]=gradient(image0);
+image1=myNewaffine(image0,m)
+[i1gx, i1gy,  i1gz]=gradient(image0);
+[i0gx, i0gy,  i0gz]=gradient(image0);
+[i1gx, i1gy,  i1gz]=gradient(image1);
+i1gy
+i1gz
+i0gy
+i0gz
+ipgx
+i1gx
+i0gx
+i1gx
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[2 0 0 0 1 0 1 0 ]')
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)));
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+figure; imagesc(image0(:,:,1))
+figure; imagesc(image1(:,:,1))
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+image1=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+m
+m
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+m
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+figure; imagesc(I0(:,:,1)); title('0');
+figure; imagesc(I2(:,:,1)); title('2');
+figure; imagesc(I3(:,:,1)); title('3');
+image1=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+image1=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)))*sin(x/sigmax);
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+figure; imagesc(image0(:,:,1))
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)))*sin(x/x0);
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+for x= 1:29
+image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)))*sin(x);
+end
+end
+size(image0)
+figure; imagesc(image0(:,:,1))
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+image1=myNewaffine(image0,m)
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.5
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+[image1 image0]=myNewaffine(image0,m)
+lmvectorisedjon(image0,image1,[1 0 0 0 1 0 1 0 ]')
+[image1 image0]=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+m
+clear m
+theta=0
+[xsize ysize zsize]=size(image0)
+x0 = xsize/10
+%x0 = 5
+y0 = -ysize/10
+%y0 = 0
+z0 = 0
+%Sx = 1.05
+Sx = 1.1
+Sy = .9
+Sz = 1
+m(:, 1)=cos(theta*pi./180).*Sx;
+m(:, 2)=-sin(theta*pi./180).*Sx;
+m(:, 3)=1/2*Sx.*(xsize-(xsize-2*x0).*cos(theta*pi./180)+(ysize-2*y0).*sin(theta*pi./180));
+m(:, 4)=sin(theta*pi./180).*Sy;
+m(:, 5) = cos(theta*pi/180).*Sy;
+m(:, 6)=-1/2*Sy.*(-ysize+(ysize-2*y0).*cos(theta*pi./180)+(xsize-2*x0).*sin(theta*pi./180));
+m(:, 7) = Sz;
+m(:, 8) = Sz.*z0;
+%creates m as a row of coefficents
+[image1 image0]=myNewaffine(image0,m)
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+figure; imagesc(image0(:,:,1)); title('0');
+figure; imagesc(image1(:,:,1)); title('1');
+m
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+Clear
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(image0,image1,[1.1 0 2.9 0 0.9 -2.0 1 0 ]')
+lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+m
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+mtrue=[0.9962 .0872 2.2272 -.0872 .9962 .2999 1 0]
+m
+mnew
+newm
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+newm0=newm
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+newm0=newm
+[newm errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+newm1=newm
+[newm2 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+newm2=newm
+mtrue
+imagesc(subj1mea)
+imagesc(subj1mea(:,:,1))
+figure
+dummy=myNewaffine(i0t,newm2); imagesc(dummy);
+dummy=myNewaffine(I0t,newm2); imagesc(dummy(:,:,1));
+imagesc(subj1mea(:,:,1))
+figure; dummy=myNewaffine(I0t,newm2); imagesc(dummy(:,:,1));
+figure; dummy=myNewaffine(I0t,newm2); imagesc(dummy(:,:,1));
+figure; imagesc(I0t(:,:,1))
+[newmbad errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm011 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+dummy=myNewaffine(I0t,newm011); figure; imagesc(dummy(:,:,1)); title('011')
+[i1 i0]=myNewaffine(I0t,newm011); figure; imagesc(dummy(:,:,1)); title('011')
+[i1 i0]=myNewaffine(I0t,newm011);
+[i1 i0]=myNewaffine(I0t,newm011);
+[i1 i0]=myNewaffine(I0t,newm011);
+[i1 i0]=myNewaffine(I0t,newm011);
+mture
+mtrue
+[i1 i0]=myNewaffine(I0t,mtrue);
+figure; imagesc(subj1mea(:,:,1)))
+figure; imagesc(subj1mea(:,:,1))
+figure; imagesc(I0t(:,:,1))
+mtrue
+mtrueinv=inv([mtrue(1:3);mtrue(4:6);0;1;0;1])
+mtrue
+m(:,1)=mtrue(1);
+m(:,2)=   mtrue(2);
+m(:,3)=    mtrue(3);
+m(:,4)=    mtrue(4);
+m(:,5)=    mtrue(5);
+m(:,6)=    mtrue(6);
+m(:,7)=    mtrue(7);
+m(:,8)=    mtrue(8);
+m
+mtrueinv=inv([mtrue(1:2) 0 mtrue(3);mtrue(4:5) 0 mtrue(6);0 0 mtrue(7:8); 0 0 0 1)
+mtrueinv=inv([mtrue(1:2) 0 mtrue(3);mtrue(4:5) 0 mtrue(6);0 0 mtrue(7:8); 0 0 0 1])
+minv=[mtrueinv(1,1:2) mtrueinv(1,4) mtrueinv(2,1:2) mtrueinv(2,4) mtrueinv(3,3:4)]
+mtrue=minv
+mtrueinv=inv([mtrue(1:2) 0 mtrue(3);mtrue(4:5) 0 mtrue(6);0 0 mtrue(7:8); 0 0 0 1])
+minv=[mtrueinv(1,1:2) mtrueinv(1,4) mtrueinv(2,1:2) mtrueinv(2,4) mtrueinv(3,3:4)]
+mtrue=[0.9962 .0872 2.2272 -.0872 .9962 .2999 1 0]
+mtrueinv=inv([mtrue(1:2) 0 mtrue(3);mtrue(4:5) 0 mtrue(6);0 0 mtrue(7:8); 0 0 0 1])
+minv=[mtrueinv(1,1:2) mtrueinv(1,4) mtrueinv(2,1:2) mtrueinv(2,4) mtrueinv(3,3:4)]
+figure; imagesc(subj1mea(:,:,1))
+figure; imagesc(I0t(:,:,1))
+[i1 i0]=myNewaffine(I0t,minv);
+minv
+mtrue
+[i1 i0]=myNewaffine(subj1mea,mtrue);
+mtrue
+[i1 i0]=myNewaffine(subj1mea,mtrue);
+mtrue
+mtrue=[0.996195 -0.0871557 -2.19258 0.0871557 0.996195 -.49288 1 0]
+[i1 i0]=myNewaffine(subj1mea,mtrue);
+mtrueinv=inv([mtrue(1:2) 0 mtrue(3);mtrue(4:5) 0 mtrue(6);0 0 mtrue(7:8); 0 0 0 1])
+minv=[mtrueinv(1,1:2) mtrueinv(1,4) mtrueinv(2,1:2) mtrueinv(2,4) mtrueinv(3,3:4)]
+[i1 i0]=myNewaffine(I0t,minv);
+[newm110 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[i1 i0]=myNewaffine(I0t,newm110);
+figure; imagesc(i1(:,:,2)); title('110')
+figure; imagesc(i1(:,:,3)); title('110')
+figure; imagesc(i1(:,:,1)); title('110')
+newm110
+minv
+[newm100 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+minv
+[newm100 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+minv
+[newm011 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+minv
+[i1]=myNewaffine(I0t,newm011); title('011');
+figure; imagesc(i1(:,:,2)); title('011');
+[newm110 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[i1]=myNewaffine(I0t,newm110); title('110');
+[i1]=myNewaffine(I0t,newm100); title('100');
+[newm011 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm011 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm100 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+minv
+[newm000 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm010 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+[newm200 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]')
+tic; [newmtest errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]'); tock;
+tic; [newmtest errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]'); toc;
+tic; [newmtest2 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]'); toc;
+34.297/12.9
+tic; [newmtest3 errr landa]=lmnogradient(I0t,subj1mea,[1 0 0 0 1 0 1 0 ]'); toc;
+19.9/12.9
