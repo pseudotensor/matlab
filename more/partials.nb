@@ -1,0 +1,409 @@
+(************** Content-type: application/mathematica **************
+                     CreatedBy='Mathematica 4.2'
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     10626,        326]*)
+(*NotebookOutlinePosition[     11275,        348]*)
+(*  CellTagsIndexPosition[     11231,        344]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+    \(D[f[x[m], y[m], z[m]], m]\)], "Input"],
+
+Cell[BoxData[
+    RowBox[{
+      RowBox[{
+        RowBox[{
+          SuperscriptBox["z", "\[Prime]",
+            MultilineFunction->None], "[", "m", "]"}], " ", 
+        RowBox[{
+          SuperscriptBox["f", 
+            TagBox[\((0, 0, 1)\),
+              Derivative],
+            MultilineFunction->None], "[", \(x[m], y[m], z[m]\), "]"}]}], "+",
+       
+      RowBox[{
+        RowBox[{
+          SuperscriptBox["y", "\[Prime]",
+            MultilineFunction->None], "[", "m", "]"}], " ", 
+        RowBox[{
+          SuperscriptBox["f", 
+            TagBox[\((0, 1, 0)\),
+              Derivative],
+            MultilineFunction->None], "[", \(x[m], y[m], z[m]\), "]"}]}], "+",
+       
+      RowBox[{
+        RowBox[{
+          SuperscriptBox["x", "\[Prime]",
+            MultilineFunction->None], "[", "m", "]"}], " ", 
+        RowBox[{
+          SuperscriptBox["f", 
+            TagBox[\((1, 0, 0)\),
+              Derivative],
+            MultilineFunction->None], "[", \(x[m], y[m], z[m]\), 
+          "]"}]}]}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(mlist = {m1, m2, m3, m4, m5, m6, m7, m8}\)], "Input"],
+
+Cell[BoxData[
+    \({m1, m2, m3, m4, m5, m6, m7, m8}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(xp = m1*x + m2*y + m3\), "\[IndentingNewLine]", 
+    \(yp = m4*x + m5*y + m6\), "\[IndentingNewLine]", 
+    \(tp = m7*t + m8\), "\[IndentingNewLine]", 
+    \(p = 
+      Exp[\(-\((I1[x, y, t] - I2[xp, yp, tp])\)^2\)/sigma^2]/\((N1*N2*
+            N3)\)\), "\[IndentingNewLine]", 
+    \(H = p*Log[2, p]\), "\[IndentingNewLine]", 
+    \(\(it = Table[D[H, mlist[\([ii]\)]], {ii, 1, 8}];\)\)}], "Input"],
+
+Cell[BoxData[
+    \(m3 + m1\ x + m2\ y\)], "Output"],
+
+Cell[BoxData[
+    \(m6 + m4\ x + m5\ y\)], "Output"],
+
+Cell[BoxData[
+    \(m8 + m7\ t\)], "Output"],
+
+Cell[BoxData[
+    \(\[ExponentialE]\^\(-\(\((I1[x, y, t] - I2[m3 + m1\ x + m2\ y, m6 + m4\ \
+x + m5\ y, m8 + m7\ t])\)\^2\/sigma\^2\)\)\/\(N1\ N2\ N3\)\)], "Output"],
+
+Cell[BoxData[
+    \(\(\[ExponentialE]\^\(-\(\((I1[x, y, t] - I2[m3 + m1\ x + m2\ y, m6 + m4\
+\ x + m5\ y, m8 + m7\ t])\)\^2\/sigma\^2\)\)\ \
+Log[\[ExponentialE]\^\(-\(\((I1[x, y, t] - I2[m3 + m1\ x + m2\ y, m6 + m4\ x \
++ m5\ y, m8 + m7\ t])\)\^2\/sigma\^2\)\)\/\(N1\ N2\ N3\)]\)\/\(N1\ N2\ N3\ \
+Log[2]\)\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(FullSimplify[it[\([1]\)]]\)], "Input"],
+
+Cell[BoxData[
+    RowBox[{\(1\/\(N1\ N2\ N3\ sigma\^2\ Log[2]\)\), 
+      RowBox[{"(", 
+        RowBox[{
+        "2", " ", \(\[ExponentialE]\^\(-\(\((I1[x, y, t] - I2[m3 + m1\ x + m2\
+\ y, m6 + m4\ x + m5\ y, m8 + m7\ t])\)\^2\/sigma\^2\)\)\), " ", "x", 
+          " ", \((I1[x, y, t] - 
+              I2[m3 + m1\ x + m2\ y, m6 + m4\ x + m5\ y, m8 + m7\ t])\), 
+          " ", \((1 + 
+              Log[\[ExponentialE]\^\(-\(\((I1[x, y, t] - I2[m3 + m1\ x + m2\ \
+y, m6 + m4\ x + m5\ y, m8 + m7\ t])\)\^2\/sigma\^2\)\)\/\(N1\ N2\ N3\)])\), 
+          " ", 
+          RowBox[{
+            SuperscriptBox["I2", 
+              TagBox[\((1, 0, 0)\),
+                Derivative],
+              MultilineFunction->None], "[", \(m3 + m1\ x + m2\ y, 
+            m6 + m4\ x + m5\ y, m8 + m7\ t\), "]"}]}], ")"}]}]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[""], "Input"],
+
+Cell[BoxData[
+    \(\(it = 
+        Table[D[H[
+              p[I1[x, y, t], 
+                I2[xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+                  yp[m1, m2, m3, m4, m5, m6, m7, m8], 
+                  tp[m1, m2, m3, m4, m5, m6, m7, m8]]]], 
+            mlist[\([ii]\)]], {ii, 1, 8}];\)\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(it[\([1]\)]\)], "Input"],
+
+Cell[BoxData[
+    RowBox[{
+      RowBox[{
+        SuperscriptBox["H", "\[Prime]",
+          MultilineFunction->None], 
+        "[", \(p[I1[x, y, t], 
+          I2[xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+            yp[m1, m2, m3, m4, m5, m6, m7, m8], 
+            tp[m1, m2, m3, m4, m5, m6, m7, m8]]]\), "]"}], " ", 
+      RowBox[{
+        SuperscriptBox["p", 
+          TagBox[\((0, 1)\),
+            Derivative],
+          MultilineFunction->None], "[", \(I1[x, y, t], 
+        I2[xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+          yp[m1, m2, m3, m4, m5, m6, m7, m8], 
+          tp[m1, m2, m3, m4, m5, m6, m7, m8]]\), "]"}], " ", 
+      RowBox[{"(", 
+        RowBox[{
+          RowBox[{
+            RowBox[{
+              SuperscriptBox["I2", 
+                TagBox[\((0, 0, 1)\),
+                  Derivative],
+                MultilineFunction->None], 
+              "[", \(xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              yp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              tp[m1, m2, m3, m4, m5, m6, m7, m8]\), "]"}], " ", 
+            RowBox[{
+              SuperscriptBox["tp", 
+                TagBox[\((1, 0, 0, 0, 0, 0, 0, 0)\),
+                  Derivative],
+                MultilineFunction->None], "[", \(m1, m2, m3, m4, m5, m6, m7, 
+              m8\), "]"}]}], "+", 
+          RowBox[{
+            RowBox[{
+              SuperscriptBox["I2", 
+                TagBox[\((1, 0, 0)\),
+                  Derivative],
+                MultilineFunction->None], 
+              "[", \(xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              yp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              tp[m1, m2, m3, m4, m5, m6, m7, m8]\), "]"}], " ", 
+            RowBox[{
+              SuperscriptBox["xp", 
+                TagBox[\((1, 0, 0, 0, 0, 0, 0, 0)\),
+                  Derivative],
+                MultilineFunction->None], "[", \(m1, m2, m3, m4, m5, m6, m7, 
+              m8\), "]"}]}], "+", 
+          RowBox[{
+            RowBox[{
+              SuperscriptBox["I2", 
+                TagBox[\((0, 1, 0)\),
+                  Derivative],
+                MultilineFunction->None], 
+              "[", \(xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              yp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              tp[m1, m2, m3, m4, m5, m6, m7, m8]\), "]"}], " ", 
+            RowBox[{
+              SuperscriptBox["yp", 
+                TagBox[\((1, 0, 0, 0, 0, 0, 0, 0)\),
+                  Derivative],
+                MultilineFunction->None], "[", \(m1, m2, m3, m4, m5, m6, m7, 
+              m8\), "]"}]}]}], ")"}]}]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \(\(\(\[IndentingNewLine]\)\(it = 
+        Table[D[H[
+              p[I1[x, y], 
+                I2[xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+                  yp[m1, m2, m3, m4, m5, m6, m7, m8]]]], 
+            mlist[\([ii]\)]], {ii, 1, 8}];\)\)\)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[""], "Input"],
+
+Cell[BoxData[
+    RowBox[{
+      RowBox[{
+        SuperscriptBox["H", "\[Prime]",
+          MultilineFunction->None], 
+        "[", \(p[I1[x, y], 
+          I2[xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+            yp[m1, m2, m3, m4, m5, m6, m7, m8]]]\), "]"}], " ", 
+      RowBox[{
+        SuperscriptBox["p", 
+          TagBox[\((0, 1)\),
+            Derivative],
+          MultilineFunction->None], "[", \(I1[x, y], 
+        I2[xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+          yp[m1, m2, m3, m4, m5, m6, m7, m8]]\), "]"}], " ", 
+      RowBox[{"(", 
+        RowBox[{
+          RowBox[{
+            RowBox[{
+              SuperscriptBox["I2", 
+                TagBox[\((1, 0)\),
+                  Derivative],
+                MultilineFunction->None], 
+              "[", \(xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              yp[m1, m2, m3, m4, m5, m6, m7, m8]\), "]"}], " ", 
+            RowBox[{
+              SuperscriptBox["xp", 
+                TagBox[\((0, 1, 0, 0, 0, 0, 0, 0)\),
+                  Derivative],
+                MultilineFunction->None], "[", \(m1, m2, m3, m4, m5, m6, m7, 
+              m8\), "]"}]}], "+", 
+          RowBox[{
+            RowBox[{
+              SuperscriptBox["I2", 
+                TagBox[\((0, 1)\),
+                  Derivative],
+                MultilineFunction->None], 
+              "[", \(xp[m1, m2, m3, m4, m5, m6, m7, m8], 
+              yp[m1, m2, m3, m4, m5, m6, m7, m8]\), "]"}], " ", 
+            RowBox[{
+              SuperscriptBox["yp", 
+                TagBox[\((0, 1, 0, 0, 0, 0, 0, 0)\),
+                  Derivative],
+                MultilineFunction->None], "[", \(m1, m2, m3, m4, m5, m6, m7, 
+              m8\), "]"}]}]}], ")"}]}]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \(f[x]\)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(mlist[\([3]\)]\)], "Input"],
+
+Cell[BoxData[
+    \(m3\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(D[Exp[\(-\((x - y)\)^2\)], x]\), "\[IndentingNewLine]", 
+    \(D[Exp[\(-\((y - x)\)^2\)], x]\)}], "Input"],
+
+Cell[BoxData[
+    \(\(-2\)\ \[ExponentialE]\^\(-\((x - y)\)\^2\)\ \((x - y)\)\)], "Output"],
+
+Cell[BoxData[
+    \(2\ \[ExponentialE]\^\(-\((\(-x\) + y)\)\^2\)\ \((\(-x\) + 
+          y)\)\)], "Output"]
+}, Open  ]]
+},
+FrontEndVersion->"4.2 for Microsoft Windows",
+ScreenRectangle->{{0, 1600}, {0, 1117}},
+WindowSize->{1299, 740},
+WindowMargins->{{Automatic, 116}, {Automatic, 145}}
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[1776, 53, 58, 1, 30, "Input"],
+Cell[1837, 56, 1030, 31, 29, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[2904, 92, 73, 1, 30, "Input"],
+Cell[2980, 95, 66, 1, 29, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[3083, 101, 419, 8, 130, "Input"],
+Cell[3505, 111, 52, 1, 29, "Output"],
+Cell[3560, 114, 52, 1, 29, "Output"],
+Cell[3615, 117, 44, 1, 29, "Output"],
+Cell[3662, 120, 165, 2, 61, "Output"],
+Cell[3830, 124, 319, 5, 72, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[4186, 134, 58, 1, 30, "Input"],
+Cell[4247, 137, 817, 17, 153, "Output"]
+}, Open  ]],
+Cell[5079, 157, 26, 0, 30, "Input"],
+Cell[5108, 159, 303, 7, 30, "Input"],
+Cell[5414, 168, 26, 0, 30, "Input"],
+
+Cell[CellGroupData[{
+Cell[5465, 172, 44, 1, 30, "Input"],
+Cell[5512, 175, 2526, 63, 105, "Output"]
+}, Open  ]],
+Cell[8053, 241, 272, 6, 50, "Input"],
+
+Cell[CellGroupData[{
+Cell[8350, 251, 26, 0, 30, "Input"],
+Cell[8379, 253, 1700, 44, 86, "Output"]
+}, Open  ]],
+Cell[10094, 300, 37, 1, 30, "Input"],
+
+Cell[CellGroupData[{
+Cell[10156, 305, 47, 1, 30, "Input"],
+Cell[10206, 308, 36, 1, 29, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[10279, 314, 127, 2, 50, "Input"],
+Cell[10409, 318, 91, 1, 32, "Output"],
+Cell[10503, 321, 107, 2, 32, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+

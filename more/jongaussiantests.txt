@@ -1,0 +1,147 @@
+gaussian tests:
+
+
+clear m
+clear image0
+clear image1
+image0 = zeros(19,29,51);
+sigmax = 5;
+sigmay = 4;
+x0 = 29/3;
+y0 = 19/3;
+for y= 1:19
+    for x= 1:29
+        image0(y,x,:)=exp(-((x-x0)^2/(2*sigmax^2)+(y-y0)^2/(2*sigmay^2)));
+    end
+end
+size(image0)
+truem:
+m =
+
+  Columns 1 through 7 
+
+    1.1000         0    2.0900         0    0.9000   -2.6100    1.0000
+
+  Column 8 
+
+         0
+
+image1=myNewaffine(image0,m)
+
+lmnogradient(image0,image1,[1 0 0 0 1 0 1 0 ]')
+--------------------
+
+
+type==2 allowskew==1
+
+------------------------
+
+errr =
+
+    0.0047
+
+
+ans =
+
+    0.0047    0.0047
+
+
+landa =
+
+  1.0000e+016
+
+
+ans =
+
+landa increased
+
+
+iteration =
+
+    30
+
+
+m =
+
+   -8.7054
+   -8.8942
+  148.6207
+    3.7769
+  -11.3825
+   -8.3669
+    1.0000
+         0
+
+
+ans =
+
+   -8.7054
+   -8.8942
+  148.6207
+    3.7769
+  -11.3825
+   -8.3669
+    1.0000
+         0
+
+>> 
+
+type==2   allowskew==0
+--------------------------
+errr =
+
+  2.1770e-005
+
+
+ans =
+
+  1.0e-004 *
+
+    0.2177    0.2177
+
+
+landa =
+
+  1.0000e+008
+
+
+ans =
+
+landa increased
+
+
+iteration =
+
+    30
+
+
+m =
+
+    1.0930
+    0.0009
+    2.1529
+   -0.0007
+    0.9086
+   -2.6951
+    1.0000
+         0
+
+
+ans =
+
+    1.0930
+    0.0009
+    2.1529
+   -0.0007
+    0.9086
+   -2.6951
+    1.0000
+         0
+
+>> 
+
+type==1 allowskew==0 or 1
+----------------------
+NAN'ed out with NAN's everywhere, division by 0, etc.
+
+type==0, bad results, very small and normal error.

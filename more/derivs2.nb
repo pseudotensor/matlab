@@ -1,0 +1,361 @@
+(************** Content-type: application/mathematica **************
+                     CreatedBy='Mathematica 4.2'
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[      9739,        275]*)
+(*NotebookOutlinePosition[     10404,        298]*)
+(*  CellTagsIndexPosition[     10360,        294]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+    \(m = {m1, m2, m3, m4, m5, m6, m7, m8}\), "\[IndentingNewLine]", 
+    \(X = {x, y, t}\), "\[IndentingNewLine]", 
+    \(Xp = {m1*x + m2*y + m3, m4*x + m5*y + m6, 
+        m7*t + m8}\[IndentingNewLine] (*Xp = {m1*x + m2*y + m3, 
+            m4*x + m5*y + m6, 
+            m7*t + m8} //. {m4 \[Rule] \(-m5\)*
+                m2/m1}*) \), "\[IndentingNewLine]", 
+    \(sols = 
+      FullSimplify[
+        Solve[{xp \[Equal] Xp[\([1]\)], yp \[Equal] Xp[\([2]\)], 
+            tp \[Equal] Xp[\([3]\)]}, {x, y, t}]]\), "\[IndentingNewLine]", 
+    \(myt = \(\(sols[\([1]\)]\)[\([1]\)]\)[\([2]\)]\), "\[IndentingNewLine]", \
+
+    \(myx = \(\(sols[\([1]\)]\)[\([2]\)]\)[\([2]\)]\), "\[IndentingNewLine]", \
+
+    \(myy = \(\(sols[\([1]\)]\)[\([3]\)]\)[\([2]\)]\[IndentingNewLine] (*\ 
+      note\ order\ is\ 1, 2, 
+      3\ for\ middle\ number\ above\ because\ order\ from\ sols\ is\ t, x, 
+      y, \ change\ \(accordingly!\)\ *) \), "\[IndentingNewLine]", 
+    \( (*\ i . e . \ order\ depends\ on\ mathematica' 
+        s\ \(mood!\)\ *) \)}], "Input"],
+
+Cell[BoxData[
+    \({m1, m2, m3, m4, m5, m6, m7, m8}\)], "Output"],
+
+Cell[BoxData[
+    \({x, y, t}\)], "Output"],
+
+Cell[BoxData[
+    \({m3 + m1\ x + m2\ y, m6 + m4\ x + m5\ y, m8 + m7\ t}\)], "Output"],
+
+Cell[BoxData[
+    \({{t \[Rule] \(\(-m8\) + tp\)\/m7, 
+        x \[Rule] \(m3\ m5 - m2\ m6 - m5\ xp + m2\ yp\)\/\(m2\ m4 - m1\ m5\), 
+        y \[Rule] \(m3\ m4 - m1\ m6 - m4\ xp + m1\ yp\)\/\(\(-m2\)\ m4 + m1\ \
+m5\)}}\)], "Output"],
+
+Cell[BoxData[
+    \(\(\(-m8\) + tp\)\/m7\)], "Output"],
+
+Cell[BoxData[
+    \(\(m3\ m5 - m2\ m6 - m5\ xp + m2\ yp\)\/\(m2\ m4 - m1\ m5\)\)], "Output"],
+
+Cell[BoxData[
+    \(\(m3\ m4 - m1\ m6 - m4\ xp + m1\ yp\)\/\(\(-m2\)\ m4 + m1\ m5\)\)], \
+"Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(xp2x = {xp \[Rule] Xp[\([1]\)], yp \[Rule] Xp[\([2]\)], 
+        tp \[Rule] Xp[\([3]\)]}\), "\[IndentingNewLine]", 
+    \(x2xp = {x \[Rule] myx, y \[Rule] myy, t \[Rule] myt}\)}], "Input"],
+
+Cell[BoxData[
+    \({xp \[Rule] m3 + m1\ x + m2\ y, yp \[Rule] m6 + m4\ x + m5\ y, 
+      tp \[Rule] m8 + m7\ t}\)], "Output"],
+
+Cell[BoxData[
+    \({x \[Rule] \(m3\ m5 - m2\ m6 - m5\ xp + m2\ yp\)\/\(m2\ m4 - m1\ m5\), 
+      y \[Rule] \(m3\ m4 - m1\ m6 - m4\ xp + m1\ yp\)\/\(\(-m2\)\ m4 + m1\ m5\
+\), t \[Rule] \(\(-m8\) + tp\)\/m7}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(mylist = {xp, yp, tp} //. xp2x\), "\[IndentingNewLine]", 
+    \(mylistx = {x, y, t} //. x2xp\), "\[IndentingNewLine]", 
+    \(myvarsx = {x, y, t}\), "\[IndentingNewLine]", 
+    \(myvarsxp = {xp, yp, tp}\), "\[IndentingNewLine]", 
+    \(mym = {m1, m2, m3, m4, m5, m6, m7, m8}\)}], "Input"],
+
+Cell[BoxData[
+    \({m3 + m1\ x + m2\ y, m6 + m4\ x + m5\ y, m8 + m7\ t}\)], "Output"],
+
+Cell[BoxData[
+    \({\(m3\ m5 - m2\ m6 - m5\ xp + m2\ yp\)\/\(m2\ m4 - m1\ m5\), \(m3\ m4 - \
+m1\ m6 - m4\ xp + m1\ yp\)\/\(\(-m2\)\ m4 + m1\ m5\), \(\(-m8\) + \
+tp\)\/m7}\)], "Output"],
+
+Cell[BoxData[
+    \({x, y, t}\)], "Output"],
+
+Cell[BoxData[
+    \({xp, yp, tp}\)], "Output"],
+
+Cell[BoxData[
+    \({m1, m2, m3, m4, m5, m6, m7, m8}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(dxpdx = 
+      Table[D[mylist[\([ii]\)], myvarsx[\([jj]\)]], {ii, 1, 3}, {jj, 1, 
+          3}]\), "\[IndentingNewLine]", 
+    \(dxdxp = FullSimplify[Inverse[dxpdx]]\), "\[IndentingNewLine]", 
+    \(dxpdm = 
+      FullSimplify[
+        Table[D[mylist[\([ii]\)], mym[\([jj]\)]], {ii, 1, 3}, {jj, 1, 
+            8}]]\), "\[IndentingNewLine]", 
+    \(dxdm = 
+      FullSimplify[
+        Table[D[mylistx[\([ii]\)], mym[\([jj]\)]], {ii, 1, 3}, {jj, 1, 8}] //. 
+          xp2x]\)}], "Input"],
+
+Cell[BoxData[
+    \({{m1, m2, 0}, {m4, m5, 0}, {0, 0, m7}}\)], "Output"],
+
+Cell[BoxData[
+    \({{m5\/\(\(-m2\)\ m4 + m1\ m5\), m2\/\(m2\ m4 - m1\ m5\), 
+        0}, {m4\/\(m2\ m4 - m1\ m5\), m1\/\(\(-m2\)\ m4 + m1\ m5\), 0}, {0, 
+        0, 1\/m7}}\)], "Output"],
+
+Cell[BoxData[
+    \({{x, y, 1, 0, 0, 0, 0, 0}, {0, 0, 0, x, y, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 
+        t, 1}}\)], "Output"],
+
+Cell[BoxData[
+    \({{\(m5\ x\)\/\(m2\ m4 - m1\ m5\), \(m5\ y\)\/\(m2\ m4 - m1\ m5\), 
+        m5\/\(m2\ m4 - m1\ m5\), \(m2\ x\)\/\(\(-m2\)\ m4 + m1\ m5\), \(m2\ y\
+\)\/\(\(-m2\)\ m4 + m1\ m5\), m2\/\(\(-m2\)\ m4 + m1\ m5\), 0, 
+        0}, {\(m4\ x\)\/\(\(-m2\)\ m4 + m1\ m5\), \(m4\ y\)\/\(\(-m2\)\ m4 + \
+m1\ m5\), 
+        m4\/\(\(-m2\)\ m4 + m1\ m5\), \(m1\ x\)\/\(m2\ m4 - m1\ m5\), \(m1\ y\
+\)\/\(m2\ m4 - m1\ m5\), m1\/\(m2\ m4 - m1\ m5\), 0, 0}, {0, 0, 0, 0, 0, 
+        0, \(-\(t\/m7\)\), \(-\(1\/m7\)\)}}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(I1 = A*Sin[k*xp] //. xp2x\  (*\ assume\ this\ is\ really\ I1, \ 
+      not\ transformed\ *) \), "\[IndentingNewLine]", 
+    \(\(\(I1p\)\(=\)\(FullSimplify[I1 //. x2xp]\)\(\ \)\( (*\ 
+        this\ is\ really\ ip\ which\ required\ a\ transformation\ *) \
+\)\)\)}], "Input"],
+
+Cell[BoxData[
+    \(A\ Sin[k\ \((m3 + m1\ x + m2\ y)\)]\)], "Output"],
+
+Cell[BoxData[
+    \(A\ Sin[k\ xp]\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(\(\( (*\ 
+      a\ check\ on\ jon' 
+        s\ derivation\ *) \)\(\[IndentingNewLine]\)\(MatrixForm[
+      truedxdm = 
+        FullSimplify[
+          Table[Sum[
+              dxdxp[\([jj, ii]\)]*dxpdm[\([ii, kk]\)], {ii, 1, 3}], {jj, 1, 
+              3}, {kk, 1, 8}]]]\[IndentingNewLine]
+    MatrixForm[FullSimplify[dxdm]]\[IndentingNewLine]
+    \)\)\)], "Input"],
+
+Cell[BoxData[
+    TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+            {\(\(m5\ x\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(\(m5\ y\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(m5\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(\(m2\ x\)\/\(m2\ m4 - 
+                    m1\ m5\)\), \(\(m2\ y\)\/\(m2\ m4 - 
+                    m1\ m5\)\), \(m2\/\(m2\ m4 - m1\ m5\)\), "0", "0"},
+            {\(\(m4\ x\)\/\(m2\ m4 - m1\ m5\)\), \(\(m4\ y\)\/\(m2\ m4 - 
+                    m1\ m5\)\), \(m4\/\(m2\ m4 - 
+                    m1\ m5\)\), \(\(m1\ x\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(\(m1\ y\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(m1\/\(\(-m2\)\ m4 + m1\ m5\)\), "0", "0"},
+            {"0", "0", "0", "0", "0", "0", \(t\/m7\), \(1\/m7\)}
+            }], "\[NoBreak]", ")"}],
+      Function[ BoxForm`e$, 
+        MatrixForm[ BoxForm`e$]]]], "Output"],
+
+Cell[BoxData[
+    TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+            {\(\(m5\ x\)\/\(m2\ m4 - m1\ m5\)\), \(\(m5\ y\)\/\(m2\ m4 - 
+                    m1\ m5\)\), \(m5\/\(m2\ m4 - 
+                    m1\ m5\)\), \(\(m2\ x\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(\(m2\ y\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(m2\/\(\(-m2\)\ m4 + m1\ m5\)\), "0", "0"},
+            {\(\(m4\ x\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(\(m4\ y\)\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(m4\/\(\(-m2\)\ m4 + 
+                    m1\ m5\)\), \(\(m1\ x\)\/\(m2\ m4 - 
+                    m1\ m5\)\), \(\(m1\ y\)\/\(m2\ m4 - 
+                    m1\ m5\)\), \(m1\/\(m2\ m4 - m1\ m5\)\), "0", "0"},
+            {"0", "0", "0", "0", "0", "0", \(-\(t\/m7\)\), \(-\(1\/m7\)\)}
+            }], "\[NoBreak]", ")"}],
+      Function[ BoxForm`e$, 
+        MatrixForm[ BoxForm`e$]]]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+    \(dI1pdmk = 
+      Table[Sum[
+          D[I1p, myvarsxp[\([ii]\)]]*dxpdm[\([ii, kk]\)], {ii, 1, 3}], {kk, 
+          1, 8}]\), "\[IndentingNewLine]", 
+    \(dI1pdmk2 = 
+      FullSimplify[
+        Table[Sum[\((D[I1, myvarsx[\([ii]\)]] //. x2xp)\)*
+              truedxdm[\([ii, kk]\)], {ii, 1, 3}], {kk, 1, 8}]]\)}], "Input"],
+
+Cell[BoxData[
+    \({A\ k\ x\ Cos[k\ xp], A\ k\ y\ Cos[k\ xp], A\ k\ Cos[k\ xp], 0, 0, 0, 
+      0, 0}\)], "Output"],
+
+Cell[BoxData[
+    \({A\ k\ x\ Cos[k\ xp], A\ k\ y\ Cos[k\ xp], A\ k\ Cos[k\ xp], 0, 0, 0, 
+      0, 0}\)], "Output"]
+}, Open  ]]
+},
+FrontEndVersion->"4.2 for Microsoft Windows",
+ScreenRectangle->{{0, 1600}, {0, 1117}},
+WindowSize->{1595, 909},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+Magnification->1.5
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[1776, 53, 1061, 21, 276, "Input"],
+Cell[2840, 76, 66, 1, 41, "Output"],
+Cell[2909, 79, 43, 1, 41, "Output"],
+Cell[2955, 82, 86, 1, 41, "Output"],
+Cell[3044, 85, 233, 4, 58, "Output"],
+Cell[3280, 91, 54, 1, 57, "Output"],
+Cell[3337, 94, 92, 1, 58, "Output"],
+Cell[3432, 97, 99, 2, 58, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[3568, 104, 209, 3, 68, "Input"],
+Cell[3780, 109, 126, 2, 41, "Output"],
+Cell[3909, 113, 220, 3, 58, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[4166, 121, 309, 5, 146, "Input"],
+Cell[4478, 128, 86, 1, 41, "Output"],
+Cell[4567, 131, 185, 3, 58, "Output"],
+Cell[4755, 136, 43, 1, 41, "Output"],
+Cell[4801, 139, 46, 1, 41, "Output"],
+Cell[4850, 142, 66, 1, 41, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[4953, 148, 507, 12, 120, "Input"],
+Cell[5463, 162, 72, 1, 41, "Output"],
+Cell[5538, 165, 187, 3, 58, "Output"],
+Cell[5728, 170, 121, 2, 41, "Output"],
+Cell[5852, 174, 530, 8, 104, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[6419, 187, 293, 5, 68, "Input"],
+Cell[6715, 194, 69, 1, 41, "Output"],
+Cell[6787, 197, 47, 1, 41, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[6871, 203, 385, 10, 120, "Input"],
+Cell[7259, 215, 916, 17, 141, "Output"],
+Cell[8178, 234, 926, 17, 141, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[9141, 256, 344, 8, 68, "Input"],
+Cell[9488, 266, 116, 2, 41, "Output"],
+Cell[9607, 270, 116, 2, 41, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+
